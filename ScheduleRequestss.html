@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --navy: #143b5d;
+      --blue: #2477b3;
+      --green: #18864b;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --border: #dce4ed;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      width: min(760px, 94%);
+      margin: 28px auto;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      color: white;
+      padding: 24px;
+      border-radius: 18px;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      margin: 0 0 6px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin: 14px 0 7px;
+    }
+
+    select,
+    input,
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      min-height: 50px;
+      background: var(--green);
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 18px;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .message {
+      display: none;
+      margin-top: 16px;
+      padding: 13px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .success {
+      display: block;
+      background: #e8f7ee;
+      border: 1px solid #9ed6b5;
+      color: #12643a;
+    }
+
+    .error {
+      display: block;
+      background: #fdecec;
+      border: 1px solid #e3aaaa;
+      color: #8f2525;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="header">
+      <h1>Schedule Change Request</h1>
+      <p>Submit a request for coordinator approval.</p>
+    </div>
+
+    <div class="card">
+
+      <p class="note">
+        You may request changes for current or upcoming dates only.
+        Past schedules cannot be changed.
+      </p>
+
+      <label for="student">Student *</label>
+      <select id="student">
+        <option value="">Loading students…</option>
+      </select>
+
+      <label for="scheduleDate">Date *</label>
+<input id="scheduleDate" type="date">
+
+<label for="currentShift">Regular Shift to Change *</label>
+<select id="currentShift">
+  <option value="">Select a student and date first</option>
+</select>
+
+<label for="requestedStart">Requested Start Time *</label>
+      <input id="requestedStart" type="time">
+
+      <label for="requestedEnd">Requested End Time *</label>
+      <input id="requestedEnd" type="time">
+
+      <label for="reason">Reason *</label>
+      <select id="reason">
+        <option value="">Select a reason</option>
+        <option value="Class Conflict">Class Conflict</option>
+        <option value="Doctor Appointment">Doctor Appointment</option>
+        <option value="Family Emergency">Family Emergency</option>
+        <option value="Academic Responsibility">Academic Responsibility</option>
+        <option value="Transportation Issue">Transportation Issue</option>
+        <option value="Personal Emergency">Personal Emergency</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label for="comments">Comments</label>
+      <textarea
+        id="comments"
+        placeholder="Explain the requested change."
+      ></textarea>
+
+      <button id="submitButton" onclick="submitRequest()">
+        Submit Request
+      </button>
+
+      <div id="message" class="message"></div>
+
+    </div>
+  </div>
+
+  <script>
+
+    function loadStudents() {
+      google.script.run
+        .withSuccessHandler(students => {
+          const select = document.getElementById('student');
+
+          select.innerHTML =
+            '<option value="">Select your name</option>';
+
+          students.forEach(student => {
+            const option = document.createElement('option');
+
+            option.value = student.studentId;
+            option.textContent = student.studentName;
+
+            select.appendChild(option);
+          });
+        })
+        .withFailureHandler(error => {
+          showMessage(error.message, false);
+        })
+        .getStudentsForSchedule();
+    }
+function handleScheduleSelectionChange() {
+
+  const studentId =
+    document.getElementById('student').value;
+
+  const scheduleDate =
+    document.getElementById('scheduleDate').value;
+
+  const shiftSelect =
+    document.getElementById('currentShift');
+
+  if (!studentId || !scheduleDate) {
+
+    shiftSelect.innerHTML =
+      '<option value="">Select a student and date first</option>';
+
+    return;
+  }
+
+  shiftSelect.innerHTML =
+    '<option value="">Loading scheduled shifts…</option>';
+
+  google.script.run
+    .withSuccessHandler(function(shifts) {
+
+      shiftSelect.innerHTML =
+        '<option value="">Select a scheduled shift</option>';
+
+      shifts.forEach(function(shift) {
+
+        const option =
+          document.createElement('option');
+
+        option.value =
+          shift.scheduleId;
+
+        option.textContent =
+          shift.label;
+
+        option.dataset.start =
+          shift.start;
+
+        option.dataset.end =
+          shift.end;
+
+        shiftSelect.appendChild(option);
+      });
+
+      if (!shifts.length) {
+
+        shiftSelect.innerHTML =
+          '<option value="">No regular shifts found for this date</option>';
+      }
+
+    })
+    .withFailureHandler(function(error) {
+
+      shiftSelect.innerHTML =
+        '<option value="">Unable to load scheduled shifts</option>';
+
+      showMessage(
+        error.message,
+        false
+      );
+
+    })
+    .getScheduleShiftsForRequest(
+      studentId,
+      scheduleDate
+    );
+}
+    function submitRequest() {
+      const formData = {
+        studentId:
+          document.getElementById('student').value,
+
+        scheduleDate:
+          document.getElementById('scheduleDate').value,
+
+        requestedStart:
+          document.getElementById('requestedStart').value,
+
+        requestedEnd:
+          document.getElementById('requestedEnd').value,
+
+        reason:
+          document.getElementById('reason').value,
+
+        comments:
+          document.getElementById('comments').value.trim()
+      };
+
+      if (
+        !formData.studentId ||
+        !formData.scheduleDate ||
+        !formData.requestedStart ||
+        !formData.requestedEnd ||
+        !formData.reason
+      ) {
+        showMessage(
+          'Complete all required fields.',
+          false
+        );
+
+        return;
+      }
+
+      const button =
+        document.getElementById('submitButton');
+
+      button.disabled = true;
+      button.textContent = 'Submitting…';
+
+      google.script.run
+        .withSuccessHandler(result => {
+          showMessage(result.message, true);
+
+          clearForm();
+
+          button.disabled = false;
+          button.textContent = 'Submit Request';
+        })
+        .withFailureHandler(error => {
+          showMessage(error.message, false);
+
+          button.disabled = false;
+          button.textContent = 'Submit Request';
+        })
+        .submitScheduleRequest(formData);
+    }
+
+
+    function clearForm() {
+      document.getElementById('scheduleDate').value = '';
+      document.getElementById('requestedStart').value = '';
+      document.getElementById('requestedEnd').value = '';
+      document.getElementById('reason').value = '';
+      document.getElementById('comments').value = '';
+    }
+
+
+    function showMessage(text, success) {
+      const element =
+        document.getElementById('message');
+
+      element.textContent = text;
+
+      element.className =
+        'message ' +
+        (success ? 'success' : 'error');
+    }
+
+document
+  .getElementById('student')
+  .addEventListener(
+    'change',
+    handleScheduleSelectionChange
+  );
+
+document
+  .getElementById('scheduleDate')
+  .addEventListener(
+    'change',
+    handleScheduleSelectionChange
+  );
+    loadStudents();
+
+  </script>
+</body>
+</html>

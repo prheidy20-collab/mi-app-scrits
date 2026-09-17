@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --red: #d71920;
+      --dark-red: #9d1116;
+      --black: #0b0b0b;
+      --soft-black: #171717;
+      --white: #ffffff;
+      --gray: #b8b8b8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(215, 25, 32, .22), transparent 35%),
+        linear-gradient(180deg, #161616 0%, #050505 100%);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    .top-banner {
+      background:
+        linear-gradient(135deg, rgba(215, 25, 32, .95), rgba(120, 0, 0, .95));
+      padding: 26px 20px 34px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 4px solid #000;
+    }
+
+    .top-banner::before,
+    .top-banner::after {
+      content: "🐾";
+      position: absolute;
+      font-size: 70px;
+      opacity: .12;
+      transform: rotate(-15deg);
+    }
+
+    .top-banner::before {
+      left: 20px;
+      top: 5px;
+    }
+
+    .top-banner::after {
+      right: 20px;
+      bottom: 0;
+      transform: rotate(20deg);
+    }
+
+    .lion {
+      font-size: 70px;
+      line-height: 1;
+      margin-bottom: 6px;
+      filter: drop-shadow(0 5px 5px rgba(0,0,0,.35));
+    }
+
+    .top-banner h1 {
+      margin: 0;
+      font-size: clamp(34px, 9vw, 54px);
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .top-banner h2 {
+      margin: 4px 0 0;
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 800;
+      color: #ffe8e8;
+    }
+
+    .tagline {
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      opacity: .95;
+    }
+
+    .container {
+      width: min(440px, 92%);
+      margin: -18px auto 0;
+      position: relative;
+      z-index: 5;
+      padding-bottom: 40px;
+    }
+
+    .card {
+      background:
+        linear-gradient(180deg, rgba(28,28,28,.98), rgba(8,8,8,.98));
+      border: 2px solid var(--red);
+      border-radius: 22px;
+      padding: 26px 22px;
+      box-shadow:
+        0 20px 45px rgba(0,0,0,.45),
+        0 0 20px rgba(215,25,32,.18);
+    }
+
+    .welcome {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .welcome .paw {
+      font-size: 30px;
+      margin-bottom: 4px;
+    }
+
+    .welcome h3 {
+      margin: 0;
+      font-size: 28px;
+      color: var(--white);
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .welcome p {
+      margin: 7px 0 0;
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 8px;
+      color: #ff4c52;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 14px;
+      letter-spacing: .6px;
+    }
+
+    input {
+      width: 100%;
+      min-height: 52px;
+      border: 2px solid #4a4a4a;
+      border-radius: 13px;
+      padding: 12px 14px;
+      font-size: 17px;
+      background: #0e0e0e;
+      color: white;
+      outline: none;
+      transition: .2s;
+    }
+
+    input:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(215,25,32,.16);
+    }
+
+    input::placeholder {
+      color: #777;
+    }
+
+    .sign-in {
+      width: 100%;
+      margin-top: 22px;
+      min-height: 56px;
+      border: none;
+      border-radius: 14px;
+      background:
+        linear-gradient(135deg, var(--red), var(--dark-red));
+      color: white;
+      font-size: 20px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(215,25,32,.28);
+    }
+
+    .sign-in:active {
+      transform: scale(.98);
+    }
+
+    .message {
+      min-height: 24px;
+      margin-top: 14px;
+      text-align: center;
+      font-size: 14px;
+      color: #ffd7d7;
+    }
+
+    .family {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .5px;
+    }
+
+    .family span {
+      color: var(--red);
+    }
+
+    .safety-banner {
+      margin-top: 18px;
+      background:
+        linear-gradient(135deg, #111, #000);
+      border: 1px solid #333;
+      border-left: 5px solid var(--red);
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .safety-banner::after {
+      content: "🔑";
+      position: absolute;
+      right: 12px;
+      bottom: 0;
+      font-size: 55px;
+      opacity: .12;
+      transform: rotate(-20deg);
+    }
+
+    .safety-banner .small {
+      display: block;
+      color: #aaa;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 5px;
+    }
+
+    .safety-banner strong {
+      display: block;
+      font-size: 23px;
+      line-height: 1.15;
+      text-transform: uppercase;
+    }
+
+    .safety-banner strong span {
+      color: var(--red);
+    }
+
+    .footer-paws {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 20px;
+      letter-spacing: 8px;
+      opacity: .55;
+    }
+
+    @media (max-width: 480px) {
+      .top-banner {
+        padding-top: 22px;
+      }
+
+      .lion {
+        font-size: 62px;
+      }
+
+      .card {
+        padding: 22px 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="top-banner">
+    <div class="lion">🦁</div>
+    <h1>FIESTA IX</h1>
+    <h2>Student Portal</h2>
+    <div class="tagline">ORGULLO • LIDERAZGO • IMPACTO</div>
+  </header>
+
+  <main class="container">
+
+    <section class="card">
+
+      <div class="welcome">
+        <div class="paw">🐾</div>
+        <h3>¡Bienvenid@!</h3>
+        <p>Accede a tu portal y mantente al día.</p>
+      </div>
+
+      <label for="studentId">Student ID</label>
+      <input
+        id="studentId"
+        type="text"
+        autocomplete="off"
+        placeholder="Ingresa tu número de estudiante"
+      >
+
+      <label for="pin">PIN</label>
+      <input
+        id="pin"
+        type="password"
+        inputmode="numeric"
+        autocomplete="off"
+        placeholder="Ingresa tu PIN"
+      >
+
+      <button class="sign-in" type="button" onclick="studentLogin()">
+  🐾 Sign In
+</button>
+
+      <div id="message" class="message"></div>
+
+      <div class="family">
+        <span>❤</span> FIESTA IX + yo = VIDA  <span>❤</span>
+      </div>
+
+    </section>
+
+    <section class="safety-banner">
+      <span class="small">Nuestra misión</span>
+      <strong>
+        Si bebes,<br>
+        <span>pasa la llave 🔑</span>
+      </strong>
+    </section>
+
+<section id="studentDashboard" style="display:none; margin-top:18px;">
+
+  <div class="card">
+
+    <div class="welcome">
+      <div class="paw">🦁</div>
+      <h3 id="dashboardStudentName">Student Dashboard</h3>
+      <p>Your FIESTA IX space</p>
+    </div>
+
+<div
+  id="currentProgressCard"
+  style="
+    display:none;
+    margin:14px 0;
+    padding:16px;
+    background:#181818;
+    border:1px solid #3a3a3a;
+    border-radius:12px;
+  "
+>
+  <div
+    style="
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:10px;
+    "
+  >
+    🛡️ Current Progress
+  </div>
+
+  <div id="currentProgressPeriod"
+    style="
+      font-size:13px;
+      color:#aaa;
+      margin-bottom:12px;
+    "
+  ></div>
+
+  <div id="currentProgressShield"
+    style="
+      font-size:22px;
+      font-weight:900;
+      margin-bottom:12px;
+    "
+  ></div>
+
+  <div id="currentProgressScores"
+    style="
+      font-size:14px;
+      line-height:1.7;
+    "
+  ></div>
+</div>
+<div
+  id="activityRankingCard"
+  style="
+    display:none;
+    margin:14px 0;
+    padding:16px;
+    background:#181818;
+    border:1px solid #3a3a3a;
+    border-radius:12px;
+  "
+>
+  <div
+    style="
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:6px;
+    "
+  >
+    🏆 Activity Ranking
+  </div>
+
+  <div
+    id="activityRankingPeriod"
+    style="
+      font-size:13px;
+      color:#aaa;
+      margin-bottom:12px;
+    "
+  ></div>
+
+  <div
+    id="activityRankingMyProgress"
+    style="
+      margin-bottom:14px;
+      padding:12px;
+      background:#222;
+      border-radius:10px;
+      font-size:14px;
+      line-height:1.6;
+    "
+  ></div>
+
+  <div
+    id="activityRankingList"
+    style="
+      font-size:14px;
+      line-height:1.7;
+    "
+  ></div>
+</div>
+
+<div
+  id="weeklyFeedbackCard"
+  style="
+    display:none;
+    margin-bottom:14px;
+    padding:16px;
+    background:#181818;
+    border:1px solid #3a3a3a;
+    border-radius:12px;
+  "
+>
+  <div
+    id="weeklyFeedbackLevel"
+    style="
+      font-weight:800;
+      font-size:16px;
+      margin-bottom:6px;
+    "
+  ></div>
+
+  <div
+    id="weeklyFeedbackMessage"
+    style="
+      font-size:14px;
+      line-height:1.5;
+    "
+  ></div>
+
+  <div
+    id="weeklyFeedbackDates"
+    style="
+      margin-top:8px;
+      font-size:12px;
+      color:#aaa;
+    "
+  ></div>
+</div>
+
+   <button class="sign-in" type="button" onclick="loadMySchedule()">
+  📅 My Schedule
+</button>
+
+<div id="schedulePanel" style="display:none; margin-top:14px;"></div>
+
+    <button class="sign-in" type="button" onclick="loadActivities()">
+  🎉 Activities
+</button>
+
+<div id="activitiesPanel" style="display:none; margin-top:14px;"></div>
+
+<div
+  id="replacementSchedulePanel"
+  style="
+    display:none;
+    margin-top:14px;
+    padding:16px;
+    background:#181818;
+    border:1px solid #3a3a3a;
+    border-radius:12px;
+  "
+></div>
+
+    <button
+  class="sign-in"
+  type="button"
+  onclick="openScheduleRequest()"
+>
+  🔄 Request Schedule Change
+</button>
+<div
+  id="scheduleRequestPanel"
+  style="display:none; margin-top:14px;"
+></div>
+
+   <button class="sign-in" type="button" onclick="loadAchievements()">
+  🏆 My Achievements
+</button>
+
+<div id="achievementsPanel" style="display:none; margin-top:14px;"></div>
+
+    <button class="sign-in" type="button">
+      📢 Announcements
+    </button>
+
+  </div>
+
+</section>
+
+    <div class="footer-paws">
+      🐾 🐾 🐾
+    </div>
+
+  </main>
+<script>
+  let loggedInStudent = null;
+function openScheduleRequest() {
+
+  if (!loggedInStudent || !loggedInStudent.id) {
+    alert('Please sign in first.');
+    return;
+  }
+
+  const panel =
+    document.getElementById('scheduleRequestPanel');
+
+  if (panel.style.display === 'block') {
+    panel.style.display = 'none';
+    return;
+  }
+
+  panel.innerHTML =
+    '<div style="' +
+      'padding:16px;' +
+      'border:1px solid #333;' +
+      'border-radius:12px;' +
+      'background:#111;' +
+      'color:#fff;' +
+      'text-align:left;' +
+    '">' +
+
+      '<div style="font-size:18px; font-weight:900; margin-bottom:6px;">' +
+        '🔄 Schedule Change Request' +
+      '</div>' +
+
+      '<div style="color:#aaa; font-size:13px; margin-bottom:14px;">' +
+        'Submit a request for coordinator approval.' +
+      '</div>' +
+
+      '<label for="studentScheduleRequestDate">Date *</label>' +
+      '<input ' +
+        'id="studentScheduleRequestDate" ' +
+        'type="date" ' +
+        'onchange="loadStudentScheduleRequestShifts()"' +
+      '>' +
+
+      '<label for="studentScheduleRequestShift">' +
+        'Regular Shift to Change *' +
+      '</label>' +
+
+      '<select ' +
+        'id="studentScheduleRequestShift" ' +
+        'style="' +
+          'width:100%;' +
+          'min-height:48px;' +
+          'border:2px solid #4a4a4a;' +
+          'border-radius:13px;' +
+          'padding:12px 14px;' +
+          'font-size:16px;' +
+          'background:#0e0e0e;' +
+          'color:white;' +
+        '"' +
+      '>' +
+        '<option value="">Select a date first</option>' +
+      '</select>' +
+
+      '<label for="studentScheduleRequestedStart">' +
+        'Requested Start Time *' +
+      '</label>' +
+
+      '<input ' +
+        'id="studentScheduleRequestedStart" ' +
+        'type="time"' +
+      '>' +
+
+      '<label for="studentScheduleRequestedEnd">' +
+        'Requested End Time *' +
+      '</label>' +
+
+      '<input ' +
+        'id="studentScheduleRequestedEnd" ' +
+        'type="time"' +
+      '>' +
+
+      '<label for="studentScheduleRequestReason">Reason *</label>' +
+
+      '<select ' +
+        'id="studentScheduleRequestReason" ' +
+        'style="' +
+          'width:100%;' +
+          'min-height:48px;' +
+          'border:2px solid #4a4a4a;' +
+          'border-radius:13px;' +
+          'padding:12px 14px;' +
+          'font-size:16px;' +
+          'background:#0e0e0e;' +
+          'color:white;' +
+        '"' +
+      '>' +
+        '<option value="">Select a reason</option>' +
+        '<option value="Class Conflict">Class Conflict</option>' +
+        '<option value="Doctor Appointment">Doctor Appointment</option>' +
+        '<option value="Family Emergency">Family Emergency</option>' +
+        '<option value="Academic Responsibility">Academic Responsibility</option>' +
+        '<option value="Transportation Issue">Transportation Issue</option>' +
+        '<option value="Personal Emergency">Personal Emergency</option>' +
+        '<option value="Other">Other</option>' +
+      '</select>' +
+
+      '<label for="studentScheduleRequestComments">Comments</label>' +
+
+      '<textarea ' +
+        'id="studentScheduleRequestComments" ' +
+        'placeholder="Explain the requested change." ' +
+        'style="' +
+          'width:100%;' +
+          'min-height:100px;' +
+          'border:2px solid #4a4a4a;' +
+          'border-radius:13px;' +
+          'padding:12px 14px;' +
+          'font-size:16px;' +
+          'background:#0e0e0e;' +
+          'color:white;' +
+          'resize:vertical;' +
+        '"' +
+      '></textarea>' +
+
+      '<button ' +
+        'id="studentScheduleRequestSubmit" ' +
+        'class="sign-in" ' +
+        'type="button" ' +
+        'onclick="submitStudentScheduleRequest()"' +
+      '>' +
+        'SUBMIT REQUEST' +
+      '</button>' +
+
+      '<div ' +
+        'id="studentScheduleRequestMessage" ' +
+        'style="margin-top:12px; font-size:14px;"' +
+      '></div>' +
+
+    '</div>';
+
+  panel.style.display = 'block';
+}
+
+  function studentLogin() {
+    const studentId = document.getElementById('studentId').value.trim();
+    const pin = document.getElementById('pin').value.trim();
+    const message = document.getElementById('message');
+
+    message.textContent = '';
+
+    if (!studentId || !pin) {
+      message.textContent = 'Please enter your Student ID and PIN.';
+      return;
+    }
+
+    google.script.run
+      .withSuccessHandler(function(student) {
+        loggedInStudent = student;
+  message.textContent = 'Welcome, ' + student.name + '! 🦁';
+
+  document.getElementById('dashboardStudentName').textContent =
+    'Welcome, ' + student.name + '!';
+
+  document.getElementById('studentDashboard').style.display = 'block';
+
+  loadWeeklyFeedback();
+  loadCurrentFiestaProgress();
+  loadActivityRanking();
+})
+      .withFailureHandler(function(error) {
+        message.textContent = error.message || 'Unable to sign in.';
+      })
+      .verifyStudentNumberPin(studentId, pin);
+  }
+function loadStudentScheduleRequestShifts() {
+
+  if (!loggedInStudent || !loggedInStudent.id) {
+    alert('Please sign in first.');
+    return;
+  }
+
+  const scheduleDate =
+    document.getElementById(
+      'studentScheduleRequestDate'
+    ).value;
+
+  const shiftSelect =
+    document.getElementById(
+      'studentScheduleRequestShift'
+    );
+
+  if (!scheduleDate) {
+    shiftSelect.innerHTML =
+      '<option value="">Select a date first</option>';
+    return;
+  }
+
+  shiftSelect.innerHTML =
+    '<option value="">Loading scheduled shifts…</option>';
+
+  google.script.run
+    .withSuccessHandler(function(shifts) {
+
+      shiftSelect.innerHTML =
+        '<option value="">Select a scheduled shift</option>';
+
+      shifts.forEach(function(shift) {
+
+        const option =
+          document.createElement('option');
+
+        option.value =
+          shift.scheduleId;
+
+        option.textContent =
+          shift.label;
+
+        option.dataset.start =
+          shift.start;
+
+        option.dataset.end =
+          shift.end;
+
+        shiftSelect.appendChild(option);
+      });
+
+      if (!shifts.length) {
+        shiftSelect.innerHTML =
+          '<option value="">No regular shifts found for this date</option>';
+      }
+
+    })
+    .withFailureHandler(function(error) {
+
+      shiftSelect.innerHTML =
+        '<option value="">Unable to load scheduled shifts</option>';
+
+      alert(
+        '⚠️ ' +
+        (error.message || String(error))
+      );
+
+    })
+    .getScheduleShiftsForRequest(
+      loggedInStudent.id,
+      scheduleDate
+    );
+}
+function loadMySchedule() {
+
+    const existingPanel = document.getElementById('schedulePanel');
+
+  if (existingPanel.style.display === 'block') {
+    existingPanel.style.display = 'none';
+    return;
+  }
+  
+  if (!loggedInStudent || !loggedInStudent.id) {
+    alert('Please sign in first.');
+    return;
+  }
+
+  google.script.run
+   .withSuccessHandler(function(data) {
+  let scheduleText = '';
+
+  if (data.regularSchedules.length) {
+    data.regularSchedules.forEach(function(shift) {
+      scheduleText +=
+        shift.day +
+        ': ' +
+        shift.start +
+        ' - ' +
+        shift.end +
+        '\n';
+    });
+  } else {
+    scheduleText = 'No regular schedule found.';
+  }
+
+if (data.approvedChanges && data.approvedChanges.length) {
+  scheduleText += '\n📌 APPROVED SCHEDULE CHANGES\n';
+
+  data.approvedChanges.forEach(function(change) {
+    scheduleText +=
+      (change.replacementDate || change.originalDate) +
+      ': ' +
+      (change.replacementStart || change.originalStart) +
+      ' - ' +
+      (change.replacementEnd || change.originalEnd) +
+      '\n';
+  });
+}
+
+if (data.activities && data.activities.length) {
+  scheduleText += '\n🎉 ASSIGNED ACTIVITIES\n';
+
+  data.activities.forEach(function(activity) {
+    scheduleText +=
+      activity.date +
+      ': ' +
+      activity.activityName +
+      ' — ' +
+      activity.start +
+      ' - ' +
+      activity.end +
+      '\n';
+  });
+}
+
+  const panel = document.getElementById('schedulePanel');
+
+panel.innerHTML =
+  '<div style="padding:16px; border:1px solid #333; border-radius:12px; background:#111; text-align:left;">' +
+    '<div style="font-weight:800; color:#fff; margin-bottom:12px;">📅 MY REGULAR SCHEDULE</div>' +
+    '<div style="color:#fff; white-space:pre-line; line-height:1.8;">' +
+      scheduleText +
+    '</div>' +
+  '</div>';
+
+panel.style.display = 'block';
+})
+    .withFailureHandler(function(error) {
+  const panel = document.getElementById('schedulePanel');
+
+  panel.innerHTML =
+    '<div style="padding:16px; border:1px solid #d71920; border-radius:12px; background:#111; color:#fff;">' +
+      '⚠️ ' + String(error) +
+    '</div>';
+
+  panel.style.display = 'block';
+  
+})
+
+    .getStudentScheduleViewerData(loggedInStudent.id);
+}
+
+function loadAchievements() {
+
+  if (!loggedInStudent || !loggedInStudent.id) {
+    return;
+  }
+
+  const panel =
+    document.getElementById(
+      'achievementsPanel'
+    );
+
+  panel.style.display = 'block';
+
+  panel.innerHTML =
+    '<div style="padding:14px; background:#181818; border:1px solid #3a3a3a; border-radius:12px;">Loading achievements...</div>';
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      const achievements =
+        result &&
+        Array.isArray(result.achievements)
+          ? result.achievements
+          : [];
+
+      if (!achievements.length) {
+        panel.innerHTML =
+          '<div style="padding:14px; background:#181818; border:1px solid #3a3a3a; border-radius:12px; text-align:center;">' +
+          '<div style="font-size:34px; margin-bottom:8px;">🛡️</div>' +
+          '<div style="font-weight:800;">Your achievement journey starts here!</div>' +
+          '<div style="margin-top:6px; color:#aaa; font-size:13px;">Keep showing up, being on time, and giving your best.</div>' +
+          '</div>';
+
+        return;
+      }
+
+      let html =
+        '<div style="padding:16px; background:#181818; border:1px solid #3a3a3a; border-radius:12px;">' +
+        '<div style="font-size:18px; font-weight:900; margin-bottom:14px;">🏆 My Achievements</div>';
+
+      achievements.forEach(function(item) {
+
+        html +=
+          '<div style="padding:12px; margin-bottom:10px; background:#222; border:1px solid #444; border-radius:10px;">' +
+          '<div style="font-weight:900;">' +
+          escapeHtml(item.name || 'Achievement') +
+          '</div>' +
+          '<div style="margin-top:5px; font-size:13px; color:#ccc;">' +
+          escapeHtml(item.description || '') +
+          '</div>' +
+          '<div style="margin-top:6px; font-size:12px; color:#888;">' +
+          escapeHtml(item.date || '') +
+          '</div>' +
+          '</div>';
+      });
+
+      html += '</div>';
+
+      panel.innerHTML = html;
+
+    })
+    .withFailureHandler(function(error) {
+
+      panel.innerHTML =
+        '<div style="padding:14px; background:#381818; border:1px solid #7a3030; border-radius:12px;">' +
+        escapeHtml(
+          error.message ||
+          'Unable to load achievements.'
+        ) +
+        '</div>';
+
+    })
+    .getStudentAchievements(
+      loggedInStudent.id
+    );
+}
+
+function loadWeeklyFeedback() {
+
+  if (!loggedInStudent || !loggedInStudent.id) {
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      const card =
+        document.getElementById(
+          'weeklyFeedbackCard'
+        );
+
+      const level =
+        document.getElementById(
+          'weeklyFeedbackLevel'
+        );
+
+      const message =
+        document.getElementById(
+          'weeklyFeedbackMessage'
+        );
+
+      const dates =
+        document.getElementById(
+          'weeklyFeedbackDates'
+        );
+
+      if (
+        !result ||
+        !result.hasFeedback
+      ) {
+        card.style.display = 'none';
+        return;
+      }
+
+      level.textContent =
+        result.level || 'Weekly Feedback';
+
+      message.textContent =
+        result.message || '';
+
+      dates.textContent =
+        result.weekStart &&
+        result.weekEnd
+          ? result.weekStart +
+            ' - ' +
+            result.weekEnd
+          : '';
+
+      card.style.display = 'block';
+
+    })
+    .withFailureHandler(function(error) {
+
+      console.error(
+        'Weekly feedback error:',
+        error
+      );
+
+    })
+    .getStudentWeeklyFeedback(
+      loggedInStudent.id
+    );
+}
+function loadCurrentFiestaProgress() {
+
+  if (!loggedInStudent || !loggedInStudent.id) {
+    return;
+  }
+
+if (result.hasProgress === false) {
+
+  period.textContent =
+    result.periodLabel || '';
+
+  shield.textContent =
+    '🛡️ Building Your Shield';
+
+  scores.innerHTML =
+    'Your progress will begin once you complete your first scheduled workday.';
+
+  card.style.display = 'block';
+
+  return;
+}
+
+  const card =
+    document.getElementById(
+      'currentProgressCard'
+    );
+
+  const period =
+    document.getElementById(
+      'currentProgressPeriod'
+    );
+
+  const shield =
+    document.getElementById(
+      'currentProgressShield'
+    );
+
+  const scores =
+    document.getElementById(
+      'currentProgressScores'
+    );
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      if (!result) {
+        card.style.display = 'none';
+        return;
+      }
+
+      period.textContent =
+        result.periodLabel || '';
+
+      shield.textContent =
+        result.shield &&
+        result.shield.label
+          ? result.shield.label
+          : '🛡️ Building Your Shield';
+
+      scores.innerHTML =
+        '<strong>Punctuality:</strong> ' +
+        Number(
+          result.punctualityScore || 0
+        ).toFixed(0) +
+        '%<br>' +
+
+        '<strong>Attendance:</strong> ' +
+        Number(
+          result.attendanceScore || 0
+        ).toFixed(0) +
+        '%<br>' +
+
+        '<strong>Overall Score:</strong> ' +
+        Number(
+          result.finalScore || 0
+        ).toFixed(0) +
+        '%';
+
+      card.style.display = 'block';
+
+    })
+    .withFailureHandler(function(error) {
+
+      console.error(
+        'Current progress error:',
+        error
+      );
+
+      card.style.display = 'none';
+
+    })
+    .getStudentCurrentFiestaProgress(
+      loggedInStudent.id
+    );
+}
+
+function loadActivityRanking() {
+
+  if (!loggedInStudent) {
+    return;
+  }
+
+  const card =
+    document.getElementById(
+      'activityRankingCard'
+    );
+
+  const period =
+    document.getElementById(
+      'activityRankingPeriod'
+    );
+
+  const myProgress =
+    document.getElementById(
+      'activityRankingMyProgress'
+    );
+
+  const list =
+    document.getElementById(
+      'activityRankingList'
+    );
+
+  google.script.run
+    .withSuccessHandler(function(data) {
+
+      const ranking =
+        data.ranking || [];
+
+      period.textContent =
+        data.periodLabel || '';
+
+      const me =
+        ranking.find(function(item) {
+          return (
+            String(item.studentId) ===
+            String(loggedInStudent.id)
+          );
+        });
+
+      if (me) {
+
+        myProgress.innerHTML =
+          '<strong>Your Progress</strong><br>' +
+          '🏅 Rank: #' +
+          me.rank +
+          '<br>' +
+          '🎉 Completed Activities: ' +
+          me.activityCount +
+          '<br>' +
+          escapeHtml(me.label);
+
+      } else {
+
+        myProgress.innerHTML =
+          '<strong>Your Progress</strong><br>' +
+          '🌱 Complete your first activity to enter the ranking.';
+      }
+
+      if (!ranking.length) {
+
+        list.innerHTML =
+          '<div style="color:#aaa;">' +
+          'No completed activities yet this period.' +
+          '</div>';
+
+        card.style.display =
+          'block';
+
+        return;
+      }
+
+      let html = '';
+
+      ranking.forEach(function(item) {
+
+        let medal = '🏅';
+
+        if (item.rank === 1) {
+          medal = '🥇';
+        } else if (item.rank === 2) {
+          medal = '🥈';
+        } else if (item.rank === 3) {
+          medal = '🥉';
+        }
+
+        html +=
+          '<div style="' +
+            'padding:10px 0;' +
+            'border-bottom:1px solid #333;' +
+          '">' +
+            medal +
+            ' #' +
+            item.rank +
+            ' ' +
+            escapeHtml(
+              item.studentName
+            ) +
+            ' — ' +
+            item.activityCount +
+            ' activities' +
+            '<br>' +
+            '<span style="color:#aaa;">' +
+              escapeHtml(
+                item.label
+              ) +
+            '</span>' +
+          '</div>';
+      });
+
+      list.innerHTML =
+        html;
+
+      card.style.display =
+        'block';
+    })
+    .withFailureHandler(function(error) {
+
+      console.error(
+        'Activity ranking error:',
+        error
+      );
+
+      card.style.display =
+        'none';
+    })
+    .getStudentActivityRanking();
+}
+
+function loadActivities() {
+
+  const panel = document.getElementById('activitiesPanel');
+
+  if (panel.style.display === 'block') {
+    panel.style.display = 'none';
+    return;
+  }
+
+  if (!loggedInStudent || !loggedInStudent.id) {
+    alert('Please sign in first.');
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(activities) {
+      let html = '';
+
+      if (activities && activities.length) {
+        html +=
+          '<div style="padding:16px; border:1px solid #333; border-radius:12px; background:#111; text-align:left;">' +
+            '<div style="font-weight:800; color:#fff; margin-bottom:12px;">🎉 AVAILABLE ACTIVITIES</div>';
+
+        activities.forEach(function(activity) {
+          const cardBackground = activity.past ? '#2a2a2a' : '#181818';
+const cardBorder = activity.past ? '#555' : '#3a3a3a';
+          html +=
+            '<div style="padding:12px; margin-bottom:12px; border:1px solid ' +
+  cardBorder +
+  '; border-radius:10px; background:' +
+  cardBackground +
+  ';">' +
+
+              '<div style="font-weight:800; color:#ff4c52; font-size:17px;">' +
+                activity.activityName +
+              '</div>' +
+
+              '<div style="color:#fff; margin-top:6px;">' +
+                activity.date +
+              '</div>' +
+
+              '<div style="color:#ddd; margin-top:4px;">' +
+                activity.start +
+                ' - ' +
+                activity.end +
+              '</div>' +
+
+              (
+                activity.location
+                  ? '<div style="color:#aaa; margin-top:4px;">📍 ' +
+                      activity.location +
+                    '</div>'
+                  : ''
+              ) +
+
+              (
+                activity.description
+                  ? '<div style="color:#bbb; margin-top:8px; font-size:14px;">' +
+                      activity.description +
+                    '</div>'
+                  : ''
+              ) +
+
+             (
+  activity.past
+    ? '<div style="margin-top:12px; padding:10px; border-radius:10px; background:#444; color:#ddd; font-weight:800; text-align:center;">✅ ACTIVITY COMPLETED</div>'
+    : activity.participating
+      ? '<div style="margin-top:12px; padding:10px; border-radius:10px; background:#12351f; color:#9ff0b8; font-weight:800; text-align:center;">✅ YOU\'RE PARTICIPATING</div>'
+      : activity.pending
+        ? '<div style="margin-top:12px; padding:10px; border-radius:10px; background:#5a4a16; color:#ffe08a; font-weight:800; text-align:center;">⏳ WAITING FOR APPROVAL</div>'
+        : '<button type="button" class="sign-in" style="margin-top:12px; min-height:48px; font-size:15px;" onclick="requestActivityParticipation(\'' +
+            activity.activityId +
+          '\')">🙋 I WANT TO PARTICIPATE</button>'
+) +
+
+            '</div>';
+        });
+
+        html += '</div>';
+      } else {
+        html =
+          '<div style="padding:16px; border:1px solid #333; border-radius:12px; background:#111; color:#fff;">' +
+            'No activities are available right now.' +
+          '</div>';
+      }
+
+      panel.innerHTML = html;
+      panel.style.display = 'block';
+    })
+    .withFailureHandler(function(error) {
+      panel.innerHTML =
+        '<div style="padding:16px; border:1px solid #d71920; border-radius:12px; background:#111; color:#fff;">' +
+          '⚠️ ' + String(error) +
+        '</div>';
+
+      panel.style.display = 'block';
+    })
+    .getStudentPortalActivities(loggedInStudent.id);
+}
+function requestActivityParticipation(activityId) {
+  if (!loggedInStudent || !loggedInStudent.id) {
+    alert('Please sign in first.');
+    return;
+  }
+  const hoursTreatment = prompt(
+    'How will you participate?\n\n' +
+    '1 - Additional Hours\n' +
+    '2 - Volunteer Hours\n' +
+    '3 - Replace Regular Schedule\n\n' +
+    'Enter 1, 2, or 3:'
+  );
+
+  let selectedTreatment = '';
+
+  if (hoursTreatment === '1') {
+    selectedTreatment = 'ADDITIONAL HOURS';
+  } else if (hoursTreatment === '2') {
+    selectedTreatment = 'VOLUNTEER HOURS';
+  } else if (hoursTreatment === '3') {
+    selectedTreatment = 'REPLACES REGULAR SHIFT';
+  } else {
+    alert('Please select 1, 2, or 3.');
+    return;
+  }
+
+if (selectedTreatment === 'REPLACES REGULAR SHIFT') {
+  loadReplacementScheduleForStudent(activityId);
+  return;
+}
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      alert(result.message);
+
+      if (result.ok) {
+        loadActivities();
+      }
+    })
+    .withFailureHandler(function(error) {
+      alert('⚠️ ' + String(error));
+    })
+    .requestActivityParticipation(
+  loggedInStudent.id,
+  activityId,
+  selectedTreatment,
+  ''
+);
+}
+
+function loadReplacementScheduleForStudent(activityId) {
+  if (!loggedInStudent || !loggedInStudent.id) {
+    alert('Please sign in first.');
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      if (
+        !result ||
+        !result.found ||
+        !result.shifts ||
+        !result.shifts.length
+      ) {
+        alert('No regular schedules were found for this activity.');
+        return;
+      }
+
+      const panel =
+        document.getElementById(
+          'replacementSchedulePanel'
+        );
+
+      let html =
+        '<h3 style="margin-top:0;">Replace Regular Schedule</h3>' +
+
+        '<div style="margin-bottom:12px; color:#ccc;">' +
+          '<strong>Activity:</strong> ' +
+          result.activityName +
+          '<br>' +
+
+          '<strong>Date:</strong> ' +
+          result.activityDate +
+          '<br>' +
+
+          '<strong>Activity hours:</strong> ' +
+          Number(
+            result.activityHours || 0
+          ).toFixed(2) +
+          ' hrs' +
+        '</div>';
+
+      result.shifts.forEach(function(shift) {
+
+        html +=
+          '<div style="' +
+            'margin-top:10px;' +
+            'padding:12px;' +
+            'border:1px solid #3a3a3a;' +
+            'border-radius:10px;' +
+            'background:#222;' +
+          '">' +
+
+            '<div style="font-weight:800;">' +
+              shift.displayDate +
+            '</div>' +
+
+            '<div style="margin-top:4px; color:#ccc;">' +
+              shift.regularStart +
+              ' - ' +
+              shift.regularEnd +
+            '</div>' +
+
+            '<div style="margin-top:4px; color:#aaa;">' +
+              'Available: ' +
+              Number(
+                shift.availableHours || 0
+              ).toFixed(2) +
+              ' hrs' +
+            '</div>' +
+
+            '<div style="margin-top:10px;">' +
+  '<label style="display:block; margin-bottom:5px;">' +
+    'Hours to replace' +
+  '</label>' +
+
+  '<input ' +
+    'type="number" ' +
+    'min="0" ' +
+    'max="' + shift.availableHours + '" ' +
+    'step="0.25" ' +
+    'value="0" ' +
+    'class="studentReplacementHoursInput" ' +
+    'data-shift-key="' + shift.shiftKey + '" ' +
+    'data-date="' + shift.dateValue + '" ' +
+    'data-start="' + shift.regularStartValue + '" ' +
+    'data-end="' + shift.regularEndValue + '" ' +
+    'data-available="' + shift.availableHours + '" ' +
+    'oninput="updateStudentReplacementAllocation()" ' +
+    'style="' +
+      'width:100%;' +
+      'box-sizing:border-box;' +
+      'padding:10px;' +
+      'border-radius:8px;' +
+      'border:1px solid #555;' +
+      'background:#111;' +
+      'color:white;' +
+    '"' +
+  '>' +
+'</div>' +
+
+          '</div>';
+      });
+
+html +=
+  '<div style="' +
+    'margin-top:16px;' +
+    'padding:12px;' +
+    'border-radius:10px;' +
+    'background:#111;' +
+    'border:1px solid #444;' +
+  '">' +
+
+    '<div><strong>Allocated:</strong> ' +
+      '<span id="studentReplacementAllocated">0.00</span>' +
+      ' / ' +
+      Number(
+        result.activityHours || 0
+      ).toFixed(2) +
+      ' hrs' +
+    '</div>' +
+
+    '<div style="margin-top:5px;">' +
+      '<strong>Remaining:</strong> ' +
+      '<span id="studentReplacementRemaining">' +
+        Number(
+          result.activityHours || 0
+        ).toFixed(2) +
+      '</span> hrs' +
+    '</div>' +
+
+  '</div>';
+
+html +=
+  '<button ' +
+    'type="button" ' +
+    'class="sign-in" ' +
+    'style="margin-top:14px;" ' +
+    'onclick="submitReplacementParticipation(\'' +
+      activityId +
+    '\')"' +
+  '>' +
+    '🙋 SUBMIT PARTICIPATION REQUEST' +
+  '</button>';
+
+panel.dataset.activityHours =
+  Number(
+    result.activityHours || 0
+  ).toFixed(2);
+
+     panel.innerHTML = html;
+
+panel
+  .querySelectorAll(
+    '.studentReplacementHoursInput'
+  )
+  .forEach(function(input) {
+    input.addEventListener(
+      'input',
+      updateStudentReplacementAllocation
+    );
+  });
+
+panel.style.display = 'block';
+
+      panel.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+
+    })
+    .withFailureHandler(function(error) {
+      alert('⚠️ ' + String(error));
+    })
+    .getRegularShiftForActivity(
+      loggedInStudent.id,
+      activityId
+    );
+}
+
+function updateStudentReplacementAllocation() {
+  const panel =
+    document.getElementById(
+      'replacementSchedulePanel'
+    );
+
+  const activityHours =
+    Number(
+      panel.dataset.activityHours || 0
+    );
+
+  const inputs =
+    document.querySelectorAll(
+      '.studentReplacementHoursInput'
+    );
+
+  let allocated = 0;
+
+  inputs.forEach(function(input) {
+    const available =
+      Number(
+        input.dataset.available || 0
+      );
+
+    let value =
+      Number(
+        input.value || 0
+      );
+
+    if (value < 0) {
+      value = 0;
+      input.value = 0;
+    }
+
+    if (value > available) {
+      value = available;
+      input.value =
+        available.toFixed(2);
+    }
+
+    allocated += value;
+  });
+
+  if (allocated > activityHours) {
+    alert(
+      'You cannot replace more hours than the activity contains.'
+    );
+    return;
+  }
+
+  const remaining =
+    Math.max(
+      0,
+      activityHours - allocated
+    );
+
+  document.getElementById(
+    'studentReplacementAllocated'
+  ).textContent =
+    allocated.toFixed(2);
+
+  document.getElementById(
+    'studentReplacementRemaining'
+  ).textContent =
+    remaining.toFixed(2);
+}
+function submitReplacementParticipation(activityId) {
+  if (!loggedInStudent || !loggedInStudent.id) {
+    alert('Please sign in first.');
+    return;
+  }
+
+  const panel =
+    document.getElementById(
+      'replacementSchedulePanel'
+    );
+
+  const activityHours =
+    Number(
+      panel.dataset.activityHours || 0
+    );
+
+  const inputs =
+    panel.querySelectorAll(
+      '.studentReplacementHoursInput'
+    );
+
+  const replacementAllocations = [];
+  let allocatedHours = 0;
+
+  inputs.forEach(function(input) {
+    const hours =
+      Number(
+        input.value || 0
+      );
+
+    if (hours <= 0) {
+      return;
+    }
+
+    replacementAllocations.push({
+      shiftKey:
+        String(
+          input.dataset.shiftKey || ''
+        ),
+
+      date:
+        String(
+          input.dataset.date || ''
+        ),
+
+      regularStart:
+        String(
+          input.dataset.start || ''
+        ),
+
+      regularEnd:
+        String(
+          input.dataset.end || ''
+        ),
+
+      availableHours:
+        Number(
+          input.dataset.available || 0
+        ),
+
+      replaceHours:
+        hours
+    });
+
+    allocatedHours += hours;
+  });
+
+  allocatedHours =
+    Math.round(
+      allocatedHours * 100
+    ) / 100;
+
+  if (!replacementAllocations.length) {
+    alert(
+      'Please enter the regular hours this activity will replace.'
+    );
+    return;
+  }
+
+  if (
+    Math.abs(
+      allocatedHours - activityHours
+    ) > 0.001
+  ) {
+    alert(
+      'Replacement hours must equal the activity hours.'
+    );
+    return;
+  }
+
+  google.script.run
+  .withSuccessHandler(function(result) {
+    alert(result.message);
+
+    if (result.ok) {
+      document.getElementById(
+        'replacementSchedulePanel'
+      ).style.display = 'none';
+
+      loadActivities();
+    }
+  })
+  .withFailureHandler(function(error) {
+    alert('⚠️ ' + String(error));
+  })
+  .requestActivityParticipation(
+    loggedInStudent.id,
+    activityId,
+    'REPLACES REGULAR SHIFT',
+    JSON.stringify(
+      replacementAllocations
+    )
+  );
+}
+</script>
+
+</body>
+</html>

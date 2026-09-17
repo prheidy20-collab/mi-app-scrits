@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --navy: #143b5d;
+      --blue: #2477b3;
+      --green: #18864b;
+      --red: #b83232;
+      --amber: #b7791f;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --border: #dce4ed;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      width: min(1180px, 94%);
+      margin: 28px auto;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      color: white;
+      padding: 26px;
+      border-radius: 18px;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+    }
+
+    .hero p {
+      margin: 0;
+      opacity: .9;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .stat {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 18px;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .stat .value {
+      color: var(--navy);
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin: 0 0 16px;
+      color: var(--navy);
+      font-size: 20px;
+    }
+
+    .item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .item:last-child {
+      border-bottom: 0;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-right: 8px;
+    }
+
+    .WORKING { background: #e7f7ee; color: #12643a; }
+    .OFF { background: #eef2f6; color: #52606d; }
+    .LATER { background: #fff6dd; color: #805d12; }
+    .MISSING { background: #fdeaea; color: #8f2525; }
+    .DONE { background: #e8eefc; color: #2f4c8c; }
+    .SCHEDULED { background: #edf5fb; color: #245b82; }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 22px;
+    }
+
+    .quick {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
+    }
+
+    .quick a {
+      display: block;
+      text-decoration: none;
+      background: #f8fafc;
+      color: var(--navy);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 14px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 850px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .stats,
+      .quick {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="hero">
+      <h1 id="greeting">FIESTA Hub Mission Control</h1>
+      <p id="todayText">Loading today’s status…</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="label">Total Students</div>
+        <div class="value" id="totalStudents">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="label">Working Now</div>
+        <div class="value" id="workingNow">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="label">Missing Clock-In</div>
+        <div class="value" id="missingClockIn">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="label">Pending Requests</div>
+        <div class="value" id="pendingRequests">—</div>
+      </div>
+    </div>
+
+    <div class="cards">
+
+      <div class="card">
+        <h2>Today’s Team Status</h2>
+        <div id="studentsToday" class="empty">Loading…</div>
+      </div>
+
+      <div class="card">
+        <h2>Needs Attention</h2>
+        <div id="attentionItems" class="empty">Loading…</div>
+      </div>
+
+      <div class="card">
+        <h2>Today’s Activities</h2>
+        <div id="todayActivities" class="empty">Loading…</div>
+      </div>
+
+      <div class="card">
+        <h2>Quick Actions</h2>
+
+        <div class="quick">
+          <a href="?page=studentwizard" target="_top">
+            ➕ New Student
+          </a>
+
+          <a href="?page=scheduleapprovals" target="_top">
+            📨 Schedule Requests
+          </a>
+
+          <a href="?page=admin" target="_top">
+            👥 Team / Admin
+          </a>
+
+          <a href="?page=admin" target="_top">
+            📊 Monthly Reports
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function loadMissionControl() {
+      google.script.run
+        .withSuccessHandler(renderMissionControl)
+        .withFailureHandler(error => {
+          document.getElementById('attentionItems').innerHTML =
+            '<div class="empty">' + escapeHtml(error.message) + '</div>';
+        })
+        .getMissionControlData();
+    }
+
+    function renderMissionControl(data) {
+      const now = new Date();
+
+      const hour = now.getHours();
+      const greeting =
+        hour < 12
+          ? 'Good morning'
+          : hour < 18
+            ? 'Good afternoon'
+            : 'Good evening';
+
+      document.getElementById('greeting').textContent =
+        greeting + ', Heidy';
+
+      document.getElementById('todayText').textContent =
+        now.toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        });
+
+      document.getElementById('totalStudents').textContent =
+        data.totalStudents;
+
+      document.getElementById('workingNow').textContent =
+        data.workingNow;
+
+      document.getElementById('missingClockIn').textContent =
+        data.missingClockIn;
+
+      document.getElementById('pendingRequests').textContent =
+        data.pendingRequests;
+
+      renderStudents(data.studentsToday || []);
+      renderAttention(data.attentionItems || []);
+      renderActivities(data.todayActivities || []);
+    }
+
+    function renderStudents(students) {
+      const box = document.getElementById('studentsToday');
+
+      if (!students.length) {
+        box.innerHTML =
+          '<div class="empty">No active students found.</div>';
+        return;
+      }
+
+      box.innerHTML = students.map(student => `
+        <div class="item">
+          <span class="status ${escapeHtml(student.status)}">
+            ${statusLabel(student.status)}
+          </span>
+
+          <strong>${escapeHtml(student.name)}</strong>
+
+          <div class="muted">
+            ${escapeHtml(student.detail)}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAttention(items) {
+      const box = document.getElementById('attentionItems');
+
+      if (!items.length) {
+        box.innerHTML =
+          '<div class="empty">Nothing needs attention right now.</div>';
+        return;
+      }
+
+      box.innerHTML = items.map(item => `
+        <div class="item">
+          <strong>${escapeHtml(item.title)}</strong>
+          <div class="muted">${escapeHtml(item.detail)}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderActivities(items) {
+      const box = document.getElementById('todayActivities');
+
+      if (!items.length) {
+        box.innerHTML =
+          '<div class="empty">No activities scheduled today.</div>';
+        return;
+      }
+
+      box.innerHTML = items.map(item => `
+        <div class="item">
+          <strong>${escapeHtml(item.name)}</strong>
+          <div class="muted">
+            ${escapeHtml(item.time)} · ${escapeHtml(item.location)}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function statusLabel(status) {
+      const labels = {
+        WORKING: '🟢 Working',
+        OFF: '🔵 Off',
+        LATER: '🟡 Later',
+        MISSING: '🔴 Missing',
+        DONE: '✅ Done',
+        SCHEDULED: '🟦 Scheduled'
+      };
+
+      return labels[status] || status;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    loadMissionControl();
+  </script>
+</body>
+</html>

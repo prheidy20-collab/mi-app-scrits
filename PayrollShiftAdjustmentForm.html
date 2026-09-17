@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <style>
+    :root {
+      --navy: #143b5d;
+      --blue: #2477b3;
+      --green: #18864b;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --border: #dce4ed;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      width: min(760px, 94%);
+      margin: 28px auto;
+    }
+
+    .header {
+      background:
+        linear-gradient(
+          135deg,
+          var(--navy),
+          var(--blue)
+        );
+      color: white;
+      padding: 24px;
+      border-radius: 18px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin: 14px 0 7px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 95px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      min-height: 50px;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--green);
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .hours-preview {
+      margin-top: 15px;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .message {
+      display: none;
+      margin-top: 16px;
+      padding: 13px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .success {
+      display: block;
+      background: #e8f7ee;
+      border: 1px solid #9ed6b5;
+      color: #12643a;
+    }
+
+    .error {
+      display: block;
+      background: #fdecec;
+      border: 1px solid #e3aaaa;
+      color: #8f2525;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="header">
+      <h1>Manual Shift Adjustment</h1>
+      <p>
+        Add approved work when a normal
+        clock entry is unavailable.
+      </p>
+    </div>
+
+    <div class="card">
+
+      <label>Student *</label>
+      <select id="student">
+        <option value="">
+          Loading students…
+        </option>
+      </select>
+
+      <label>Work Date *</label>
+      <input
+        id="workDate"
+        type="date"
+      >
+
+      <label>Start Time *</label>
+      <input
+        id="startTime"
+        type="time"
+        onchange="calculateHours()"
+      >
+
+      <label>End Time *</label>
+      <input
+        id="endTime"
+        type="time"
+        onchange="calculateHours()"
+      >
+
+      <div
+        id="hoursPreview"
+        class="hours-preview"
+      >
+        Calculated hours: 0.00
+      </div>
+
+      <label>Reason *</label>
+      <select id="reason">
+        <option value="">
+          Select a reason
+        </option>
+
+        <option value="Internet outage">
+          Internet outage
+        </option>
+
+        <option value="Tablet unavailable">
+          Tablet unavailable
+        </option>
+
+        <option value="Off-campus activity">
+          Off-campus activity
+        </option>
+
+        <option value="Forgot to clock in">
+          Forgot to clock in
+        </option>
+
+        <option value="Clock correction">
+          Clock correction
+        </option>
+
+        <option value="Other">
+          Other
+        </option>
+      </select>
+
+      <label>Notes</label>
+      <textarea
+        id="notes"
+        placeholder="Optional explanation"
+      ></textarea>
+
+      <button
+        id="saveButton"
+        onclick="saveShiftAdjustment()"
+      >
+        Add Approved Shift
+      </button>
+
+      <div
+        id="message"
+        class="message"
+      ></div>
+
+    </div>
+  </div>
+
+  <script>
+
+    function loadStudents() {
+      google.script.run
+        .withSuccessHandler(students => {
+          const select =
+            document.getElementById('student');
+
+          select.innerHTML =
+            '<option value="">Select student</option>';
+
+          students.forEach(student => {
+            const option =
+              document.createElement('option');
+
+            option.value =
+              student.studentId;
+
+            option.textContent =
+              student.studentName;
+
+            select.appendChild(option);
+          });
+        })
+        .getStudentsForSchedule();
+    }
+
+
+    function calculateHours() {
+      const start =
+        document.getElementById(
+          'startTime'
+        ).value;
+
+      const end =
+        document.getElementById(
+          'endTime'
+        ).value;
+
+      if (!start || !end) {
+        document.getElementById(
+          'hoursPreview'
+        ).textContent =
+          'Calculated hours: 0.00';
+
+        return;
+      }
+
+      const startParts =
+        start.split(':').map(Number);
+
+      const endParts =
+        end.split(':').map(Number);
+
+      const startMinutes =
+        startParts[0] * 60 +
+        startParts[1];
+
+      const endMinutes =
+        endParts[0] * 60 +
+        endParts[1];
+
+      const difference =
+        endMinutes - startMinutes;
+
+      const hours =
+        difference > 0
+          ? difference / 60
+          : 0;
+
+      document.getElementById(
+        'hoursPreview'
+      ).textContent =
+        'Calculated hours: ' +
+        hours.toFixed(2);
+    }
+
+
+    function saveShiftAdjustment() {
+      const reason =
+        document.getElementById(
+          'reason'
+        ).value;
+
+      const notes =
+        document.getElementById(
+          'notes'
+        ).value.trim();
+
+      const formData = {
+        studentId:
+          document.getElementById(
+            'student'
+          ).value,
+
+        workDate:
+          document.getElementById(
+            'workDate'
+          ).value,
+
+        startTime:
+          document.getElementById(
+            'startTime'
+          ).value,
+
+        endTime:
+          document.getElementById(
+            'endTime'
+          ).value,
+
+        reason:
+          reason +
+          (notes
+            ? ' — ' + notes
+            : '')
+      };
+
+      if (
+        !formData.studentId ||
+        !formData.workDate ||
+        !formData.startTime ||
+        !formData.endTime ||
+        !reason
+      ) {
+        showMessage(
+          'Complete all required fields.',
+          false
+        );
+
+        return;
+      }
+
+      const button =
+        document.getElementById(
+          'saveButton'
+        );
+
+      button.disabled = true;
+      button.textContent =
+        'Saving…';
+
+      google.script.run
+        .withSuccessHandler(result => {
+          showMessage(
+            result.message,
+            true
+          );
+
+          clearForm();
+
+          button.disabled = false;
+          button.textContent =
+            'Add Approved Shift';
+        })
+        .withFailureHandler(error => {
+          showMessage(
+            error.message,
+            false
+          );
+
+          button.disabled = false;
+          button.textContent =
+            'Add Approved Shift';
+        })
+        .addPayrollShiftAdjustment(
+          formData
+        );
+    }
+
+
+    function clearForm() {
+      document.getElementById(
+        'workDate'
+      ).value = '';
+
+      document.getElementById(
+        'startTime'
+      ).value = '';
+
+      document.getElementById(
+        'endTime'
+      ).value = '';
+
+      document.getElementById(
+        'reason'
+      ).value = '';
+
+      document.getElementById(
+        'notes'
+      ).value = '';
+
+      calculateHours();
+    }
+
+
+    function showMessage(
+      text,
+      success
+    ) {
+      const box =
+        document.getElementById(
+          'message'
+        );
+
+      box.textContent = text;
+
+      box.className =
+        'message ' +
+        (success
+          ? 'success'
+          : 'error');
+    }
+
+
+    loadStudents();
+
+  </script>
+</body>
+</html>

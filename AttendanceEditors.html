@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --navy: #143b5d;
+      --blue: #2477b3;
+      --green: #18864b;
+      --red: #b83232;
+      --amber: #b7791f;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --border: #dce4ed;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      width: min(1180px, 94%);
+      margin: 28px auto;
+    }
+
+    .hero {
+      background: linear-gradient(
+        135deg,
+        var(--navy),
+        var(--blue)
+      );
+
+      color: white;
+      padding: 26px;
+      border-radius: 18px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 7px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 14px;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    select,
+    input {
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 9px;
+      font-size: 15px;
+    }
+
+    select {
+      min-width: 250px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      min-height: 44px;
+      padding: 10px 18px;
+      background: var(--blue);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .summary-box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+      padding: 16px;
+    }
+
+    .summary-label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .summary-value {
+      margin-top: 5px;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .status-box {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: 800;
+    }
+
+    .ready {
+      background: #e7f7ee;
+      border: 1px solid #a7dbc0;
+      color: #12643a;
+    }
+
+    .review {
+      background: #fff6dd;
+      border: 1px solid #e7ce8a;
+      color: #805d12;
+    }
+
+    .error {
+      background: #fdecec;
+      border: 1px solid #e3aaaa;
+      color: #8f2525;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+    }
+
+    th,
+    td {
+      padding: 11px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    th {
+      background: #edf3f8;
+      color: var(--navy);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .recorded {
+      background: #e8eefc;
+      color: #2f4c8c;
+    }
+
+    .adjustment {
+      background: #e7f7ee;
+      color: #12643a;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 20px;
+    }
+
+    @media (max-width: 760px) {
+      .summary {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Attendance Editor</h1>
+    <p>
+      Review detailed attendance before creating
+      the official monthly attendance sheet.
+    </p>
+  </div>
+
+  <div class="card">
+
+    <div class="controls">
+
+      <div>
+        <label for="student">
+          Student
+        </label>
+
+        <select id="student">
+          <option value="">
+            Loading students…
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label for="month">
+          Month
+        </label>
+
+        <input
+          id="month"
+          type="month"
+        >
+      </div>
+
+      <button onclick="loadAttendance()">
+        Load Attendance
+      </button>
+
+    </div>
+
+    <div id="message"></div>
+
+    <div class="summary">
+
+      <div class="summary-box">
+        <div class="summary-label">
+          Approved Hours
+        </div>
+
+        <div
+          class="summary-value"
+          id="approvedHours"
+        >
+          0.00
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-label">
+          Hours With Date/Time
+        </div>
+
+        <div
+          class="summary-value"
+          id="detailedHours"
+        >
+          0.00
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-label">
+          Still Needs Details
+        </div>
+<div
+  class="card"
+  style="margin-top:18px;"
+>
+  <h2>Add Missing Attendance Details</h2>
+
+  <div
+    style="
+      display:grid;
+      grid-template-columns:
+        repeat(4, minmax(0,1fr));
+      gap:12px;
+      align-items:end;
+    "
+  >
+
+    <div>
+      <label>Work Date</label>
+      <input
+        id="manualWorkDate"
+        type="date"
+        style="width:100%;"
+      >
+    </div>
+
+    <div>
+      <label>Entrada</label>
+      <input
+        id="manualStartTime"
+        type="time"
+        style="width:100%;"
+      >
+    </div>
+
+    <div>
+      <label>Salida</label>
+      <input
+        id="manualEndTime"
+        type="time"
+        style="width:100%;"
+      >
+    </div>
+
+    <div>
+      <label>Reason</label>
+      <select
+        id="manualReason"
+        style="width:100%;"
+      >
+        <option value="">
+          Select reason
+        </option>
+
+        <option value="Student forgot to clock in">
+          Student forgot to clock in
+        </option>
+
+        <option value="Student forgot to clock out">
+          Student forgot to clock out
+        </option>
+
+        <option value="Tablet or internet issue">
+          Tablet or internet issue
+        </option>
+
+        <option value="Off-campus activity">
+          Off-campus activity
+        </option>
+
+        <option value="Coordinator verified hours">
+          Coordinator verified hours
+        </option>
+
+        <option value="Other verified work">
+          Other verified work
+        </option>
+      </select>
+    </div>
+
+  </div>
+
+  <div
+    style="
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-top:14px;
+      flex-wrap:wrap;
+    "
+  >
+
+    <button
+      onclick="addManualAttendanceShift()"
+      style="background:#18864b;"
+    >
+      + Add Shift
+    </button>
+
+    <strong>
+      Calculated Hours:
+      <span id="manualCalculatedHours">
+        0.00
+      </span>
+    </strong>
+
+  </div>
+
+  <div
+    id="manualShiftError"
+    style="
+      display:none;
+      margin-top:12px;
+      padding:11px;
+      border-radius:8px;
+      background:#fdecec;
+      color:#8f2525;
+    "
+  ></div>
+</div>
+
+        <div
+          class="summary-value"
+          id="unassignedHours"
+        >
+          0.00
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>Detailed Shifts</h2>
+
+    <div style="overflow-x:auto">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Source</th>
+<th>Date</th>
+<th>Entrada</th>
+<th>Salida</th>
+<th>Hours</th>
+<th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="shiftTable">
+          <tr>
+            <td
+              colspan="6"
+              class="empty"
+            >
+              Select a student and month.
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div
+  id="correctionModal"
+  style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  "
+>
+  <div
+    style="
+      background:white;
+      width:min(520px,96%);
+      border-radius:16px;
+      padding:24px;
+      box-shadow:0 15px 50px rgba(0,0,0,.25);
+    "
+  >
+
+    <h2 style="margin-top:0;">
+      Edit Official Attendance
+    </h2>
+
+    <p style="color:#667085;">
+      The original tablet punch will remain unchanged.
+      These corrected times will be used for the official attendance sheet.
+    </p>
+
+    <input
+      id="correctionEntryId"
+      type="hidden"
+    >
+
+    <input
+      id="correctionStudentId"
+      type="hidden"
+    >
+
+    <div
+      style="
+        background:#f4f7fb;
+        padding:14px;
+        border-radius:10px;
+        margin-bottom:15px;
+      "
+    >
+      <div>
+        <strong>Date:</strong>
+        <span id="correctionDate"></span>
+      </div>
+
+      <div style="margin-top:6px;">
+        <strong>Original Entrada:</strong>
+        <span id="originalIn"></span>
+      </div>
+
+      <div style="margin-top:6px;">
+        <strong>Original Salida:</strong>
+        <span id="originalOut"></span>
+      </div>
+    </div>
+
+    <label>
+      Approved Entrada *
+    </label>
+
+    <input
+      id="approvedIn"
+      type="time"
+      style="width:100%;"
+    >
+
+    <label style="margin-top:14px;">
+      Approved Salida *
+    </label>
+
+    <input
+      id="approvedOut"
+      type="time"
+      style="width:100%;"
+    >
+
+    <label style="margin-top:14px;">
+      Reason for correction *
+    </label>
+
+    <select
+      id="correctionReason"
+      style="width:100%;"
+    >
+      <option value="">
+        Select reason
+      </option>
+
+      <option value="Student forgot to clock in on time">
+        Student forgot to clock in on time
+      </option>
+
+      <option value="Student forgot to clock out on time">
+        Student forgot to clock out on time
+      </option>
+
+      <option value="Coordinator verified actual arrival time">
+        Coordinator verified actual arrival time
+      </option>
+
+      <option value="Coordinator verified actual departure time">
+        Coordinator verified actual departure time
+      </option>
+
+      <option value="Tablet or internet issue">
+        Tablet or internet issue
+      </option>
+
+      <option value="Other verified correction">
+        Other verified correction
+      </option>
+    </select>
+
+    <div
+      id="correctionError"
+      style="
+        display:none;
+        margin-top:14px;
+        padding:11px;
+        border-radius:8px;
+        background:#fdecec;
+        color:#8f2525;
+      "
+    ></div>
+
+    <div
+      style="
+        display:flex;
+        gap:10px;
+        margin-top:20px;
+      "
+    >
+      <button
+        onclick="saveCorrection()"
+        style="
+          background:#18864b;
+          flex:1;
+        "
+      >
+        Save Correction
+      </button>
+
+      <button
+        onclick="closeCorrection()"
+        style="
+          background:#667085;
+          flex:1;
+        "
+      >
+        Cancel
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+  let currentAttendanceData = null;
+
+function initialize() {
+  const now = new Date();
+
+  document.getElementById(
+    'month'
+  ).value =
+    now.getFullYear() +
+    '-' +
+    String(
+      now.getMonth() + 1
+    ).padStart(2, '0');
+
+  google.script.run
+    .withSuccessHandler(students => {
+
+      const select =
+        document.getElementById(
+          'student'
+        );
+
+      select.innerHTML =
+        '<option value="">Select student</option>';
+
+      students.forEach(student => {
+
+        const option =
+          document.createElement(
+            'option'
+          );
+
+        option.value =
+          student.studentId;
+
+        option.textContent =
+          student.studentName;
+
+        select.appendChild(option);
+      });
+
+    })
+    .withFailureHandler(error => {
+      showMessage(
+        error.message,
+        'error'
+      );
+    })
+    .getAttendanceEditorStudents();
+}
+
+
+function loadAttendance() {
+
+  const studentId =
+    document.getElementById(
+      'student'
+    ).value;
+
+  const month =
+    document.getElementById(
+      'month'
+    ).value;
+
+  if (!studentId || !month) {
+    showMessage(
+      'Select a student and month.',
+      'error'
+    );
+
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(
+      renderAttendance
+    )
+    .withFailureHandler(error => {
+
+      showMessage(
+        error.message,
+        'error'
+      );
+
+    })
+    .getAttendanceEditorData(
+      studentId,
+      month
+    );
+}
+
+
+function renderAttendance(data) {
+
+currentAttendanceData = data;
+
+  document.getElementById(
+    'approvedHours'
+  ).textContent =
+    Number(
+      data.approvedHours || 0
+    ).toFixed(2);
+
+  document.getElementById(
+    'detailedHours'
+  ).textContent =
+    Number(
+      data.detailedHours || 0
+    ).toFixed(2);
+
+  document.getElementById(
+    'unassignedHours'
+  ).textContent =
+    Number(
+      data.unassignedHours || 0
+    ).toFixed(2);
+
+
+  if (
+    data.readyForAttendanceSheet
+  ) {
+    showMessage(
+      'Attendance details match approved payroll. Ready for the official attendance sheet.',
+      'ready'
+    );
+  } else {
+    showMessage(
+      Number(
+        data.unassignedHours || 0
+      ).toFixed(2) +
+      ' approved hours still need a date and Entrada/Salida times.',
+      'review'
+    );
+  }
+
+
+  const body =
+    document.getElementById(
+      'shiftTable'
+    );
+
+  body.innerHTML = '';
+
+
+  if (!data.shifts.length) {
+
+    body.innerHTML =
+      '<tr>' +
+      '<td colspan="5" class="empty">' +
+      'No detailed shifts were found.' +
+      '</td>' +
+      '</tr>';
+
+    return;
+  }
+
+const tr =
+  document.createElement(
+    'tr'
+  );
+
+  data.shifts.forEach(shift => {
+
+
+
+   const workDate =
+  shift.workDate || '';
+
+const start =
+  shift.startTime || '';
+
+const end =
+  shift.endTime || '';
+
+    const sourceClass =
+      shift.source === 'RECORDED'
+        ? 'recorded'
+        : 'adjustment';
+        
+        const sourceLabel =
+  shift.corrected
+    ? 'CORRECTED'
+    : shift.source;
+
+        const canEditRecorded =
+  shift.source === 'RECORDED';
+
+const canEditManual =
+  shift.source === 'MANUAL';
+
+const startOriginalHtml =
+  shift.corrected
+    ? '<div style="font-size:11px;color:#667085;margin-top:4px;">' +
+      'Original: ' +
+      escapeHtml(shift.originalStartTime || '') +
+      '</div>'
+    : '';
+
+const endOriginalHtml =
+  shift.corrected
+    ? '<div style="font-size:11px;color:#667085;margin-top:4px;">' +
+      'Original: ' +
+      escapeHtml(shift.originalEndTime || '') +
+      '</div>'
+    : '';
+const excuseAttendanceHtml =
+  shift.hasAttendanceAlert &&
+  Array.isArray(shift.attendanceAlerts)
+    ? shift.attendanceAlerts
+        .map(function(alert) {
+
+          return (
+            '<button onclick="excuseAttendanceAlert(\'' +
+            escapeHtml(alert.alertId || '') +
+            '\')" ' +
+            'style="background:#18864b;margin-left:6px;margin-bottom:4px;">' +
+            'Excuse ' +
+            escapeHtml(
+              alert.alertType || 'Alert'
+            ) +
+            '</button>'
+          );
+
+        })
+        .join('')
+    : '';
+
+const actionHtml =
+  canEditRecorded
+    ? '<button onclick="openCorrection(\'' +
+      escapeHtml(shift.entryId || '') +
+      '\')" style="background:#b7791f;">Edit</button>' +
+      excuseAttendanceHtml
+
+    : canEditManual
+      ? '<button onclick="openManualShiftEditor(\'' +
+        escapeHtml(shift.shiftId || '') +
+        '\')" style="background:#2477b3;margin-right:6px;">Edit</button>' +
+
+        '<button onclick="deleteManualShift(\'' +
+        escapeHtml(shift.shiftId || '') +
+        '\')" style="background:#b83232;">Delete</button>'
+
+      : '';
+
+   tr.innerHTML = `
+  <td>
+    <span class="badge ${sourceClass}">
+      ${escapeHtml(sourceLabel)}
+    </span>
+  </td>
+
+  <td>
+    ${escapeHtml(workDate)}
+  </td>
+
+  <td>
+    ${escapeHtml(start)}
+    ${startOriginalHtml}
+  </td>
+
+  <td>
+    ${escapeHtml(end)}
+    ${endOriginalHtml}
+  </td>
+
+  <td>
+    ${Number(
+      shift.hours || 0
+    ).toFixed(2)}
+  </td>
+
+  <td>
+    ${actionHtml}
+  </td>
+`;
+
+    body.appendChild(tr);
+  });
+
+  if (unmatchedAlerts.length) {
+
+  unmatchedAlerts.forEach(function(alert) {
+
+    const tr =
+      document.createElement('tr');
+
+    tr.innerHTML =
+      '<td>' +
+        '<span class="badge adjustment">' +
+          escapeHtml(
+            alert.alertType || 'MISSING'
+          ) +
+        '</span>' +
+      '</td>' +
+
+      '<td>' +
+        escapeHtml(
+          alert.scheduledDate || ''
+        ) +
+      '</td>' +
+
+      '<td>' +
+        (
+          alert.scheduledStart
+            ? 'Expected ' +
+              escapeHtml(
+                alert.scheduledStart
+              )
+            : ''
+        ) +
+      '</td>' +
+
+      '<td>—</td>' +
+
+      '<td>0.00</td>' +
+
+      '<td>' +
+        '<button onclick="excuseAttendanceAlert(\'' +
+        escapeHtml(
+          alert.alertId || ''
+        ) +
+        '\')" ' +
+        'style="background:#18864b;">' +
+        'Excuse ' +
+        escapeHtml(
+          alert.alertType || 'MISSING'
+        ) +
+        '</button>' +
+      '</td>';
+
+    body.appendChild(tr);
+  });
+}
+}
+
+
+function formatDate(value) {
+
+  if (!value) {
+    return '';
+  }
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return '';
+  }
+
+  return date.toLocaleDateString(
+    'en-US'
+  );
+}
+
+
+function formatTime(value) {
+
+  if (!value) {
+    return '';
+  }
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return '';
+  }
+
+  return date.toLocaleTimeString(
+    'en-US',
+    {
+      hour: 'numeric',
+      minute: '2-digit'
+    }
+  );
+}
+
+
+function showMessage(
+  text,
+  type
+) {
+
+  const box =
+    document.getElementById(
+      'message'
+    );
+
+  box.textContent = text;
+
+  box.className =
+    'status-box ' + type;
+}
+
+
+function escapeHtml(value) {
+
+  return String(
+    value ?? ''
+  )
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll(
+      "'",
+      '&#039;'
+    );
+}
+function excuseAttendanceAlert(alertId) {
+
+  if (!alertId) {
+    return;
+  }
+
+  const reason =
+    prompt(
+      'Reason for excusing this late arrival:'
+    );
+
+  if (!reason) {
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      showMessage(
+        result.message,
+        'ready'
+      );
+
+      loadAttendance();
+
+    })
+    .withFailureHandler(function(error) {
+
+      showMessage(
+        error.message,
+        'error'
+      );
+
+    })
+    .excuseAttendanceAlert(
+      alertId,
+      reason
+    );
+}
+
+function openCorrection(entryId) {
+
+  if (!currentAttendanceData) {
+    return;
+  }
+
+  const shift =
+    currentAttendanceData.shifts.find(
+      item =>
+        String(item.entryId || '') ===
+        String(entryId || '')
+    );
+
+  if (!shift) {
+    showMessage(
+      'The tablet entry could not be found.',
+      'error'
+    );
+    return;
+  }
+
+  document.getElementById(
+    'correctionEntryId'
+  ).value =
+    shift.entryId || '';
+
+  document.getElementById(
+    'correctionStudentId'
+  ).value =
+    currentAttendanceData.studentId || '';
+
+  document.getElementById(
+    'correctionDate'
+  ).textContent =
+    shift.workDate || '';
+
+  document.getElementById(
+    'originalIn'
+  ).textContent =
+    shift.startTime || '';
+
+  document.getElementById(
+    'originalOut'
+  ).textContent =
+    shift.endTime || '';
+
+  document.getElementById(
+    'approvedIn'
+  ).value =
+    convertTimeToInput_(
+      shift.startTime
+    );
+
+  document.getElementById(
+    'approvedOut'
+  ).value =
+    convertTimeToInput_(
+      shift.endTime
+    );
+
+  document.getElementById(
+    'correctionReason'
+  ).value = '';
+
+  document.getElementById(
+    'correctionError'
+  ).style.display = 'none';
+
+  document.getElementById(
+    'correctionModal'
+  ).style.display = 'flex';
+}
+
+
+function closeCorrection() {
+
+  document.getElementById(
+    'correctionModal'
+  ).style.display = 'none';
+}
+
+
+function saveCorrection() {
+
+  const entryId =
+    document.getElementById(
+      'correctionEntryId'
+    ).value;
+
+  const studentId =
+    document.getElementById(
+      'correctionStudentId'
+    ).value;
+
+  const approvedIn =
+    document.getElementById(
+      'approvedIn'
+    ).value;
+
+  const approvedOut =
+    document.getElementById(
+      'approvedOut'
+    ).value;
+
+  const reason =
+    document.getElementById(
+      'correctionReason'
+    ).value;
+
+
+  if (
+    !approvedIn ||
+    !approvedOut ||
+    !reason
+  ) {
+    showCorrectionError(
+      'Complete Entrada, Salida, and Reason.'
+    );
+    return;
+  }
+
+
+  google.script.run
+    .withSuccessHandler(result => {
+
+      closeCorrection();
+
+      showMessage(
+        result.message,
+        'ready'
+      );
+
+      // Reload current student/month
+      loadAttendance();
+
+    })
+    .withFailureHandler(error => {
+
+      showCorrectionError(
+        error.message
+      );
+
+    })
+    .saveAttendanceCorrection({
+      entryId: entryId,
+      studentId: studentId,
+      approvedIn: approvedIn,
+      approvedOut: approvedOut,
+      reason: reason
+    });
+}
+
+
+function showCorrectionError(text) {
+
+  const box =
+    document.getElementById(
+      'correctionError'
+    );
+
+  box.textContent = text;
+  box.style.display = 'block';
+}
+
+
+function convertTimeToInput_(timeText) {
+
+  if (!timeText) {
+    return '';
+  }
+
+  const match =
+    String(timeText)
+      .trim()
+      .match(
+        /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i
+      );
+
+  if (!match) {
+    return '';
+  }
+
+  let hour =
+    Number(match[1]);
+
+  const minute =
+    match[2];
+
+  const period =
+    match[3].toUpperCase();
+
+
+  if (
+    period === 'PM' &&
+    hour !== 12
+  ) {
+    hour += 12;
+  }
+
+  if (
+    period === 'AM' &&
+    hour === 12
+  ) {
+    hour = 0;
+  }
+
+  return (
+    String(hour).padStart(2, '0') +
+    ':' +
+    minute
+  );
+}
+function addManualAttendanceShift() {
+
+  const studentId =
+    document.getElementById(
+      'student'
+    ).value;
+
+  const workDate =
+    document.getElementById(
+      'manualWorkDate'
+    ).value;
+
+  const startTime =
+    document.getElementById(
+      'manualStartTime'
+    ).value;
+
+  const endTime =
+    document.getElementById(
+      'manualEndTime'
+    ).value;
+
+  const reason =
+    document.getElementById(
+      'manualReason'
+    ).value;
+
+
+  if (
+    !studentId ||
+    !workDate ||
+    !startTime ||
+    !endTime ||
+    !reason
+  ) {
+    showManualShiftError(
+      'Complete all shift fields.'
+    );
+    return;
+  }
+
+const editShiftId =
+  document.getElementById(
+    'manualWorkDate'
+  ).dataset.editShiftId || '';
+
+ const runner =
+  google.script.run
+    .withSuccessHandler(result => {
+
+      document.getElementById(
+        'manualWorkDate'
+      ).value = '';
+
+      document.getElementById(
+        'manualWorkDate'
+      ).dataset.editShiftId = '';
+
+      document.getElementById(
+        'manualStartTime'
+      ).value = '';
+
+      document.getElementById(
+        'manualEndTime'
+      ).value = '';
+
+      document.getElementById(
+        'manualReason'
+      ).value = '';
+
+      document.getElementById(
+        'manualCalculatedHours'
+      ).textContent = '0.00';
+
+      document.getElementById(
+        'manualShiftError'
+      ).style.display = 'none';
+
+      showMessage(
+        result.message,
+        'ready'
+      );
+
+      loadAttendance();
+
+    })
+    .withFailureHandler(error => {
+
+      showManualShiftError(
+        error.message
+      );
+
+    });
+
+
+if (editShiftId) {
+
+  runner.updateAttendanceManualShift({
+    shiftId: editShiftId,
+    workDate: workDate,
+    startTime: startTime,
+    endTime: endTime,
+    reason: reason
+  });
+
+} else {
+
+  runner.saveAttendanceManualShift({
+    studentId: studentId,
+    workDate: workDate,
+    startTime: startTime,
+    endTime: endTime,
+    reason: reason
+  });
+}
+
+}
+
+function showManualShiftError(text) {
+
+  const box =
+    document.getElementById(
+      'manualShiftError'
+    );
+
+  box.textContent = text;
+  box.style.display = 'block';
+}
+
+
+function updateManualCalculatedHours() {
+
+  const start =
+    document.getElementById(
+      'manualStartTime'
+    ).value;
+
+  const end =
+    document.getElementById(
+      'manualEndTime'
+    ).value;
+
+
+  if (!start || !end) {
+
+    document.getElementById(
+      'manualCalculatedHours'
+    ).textContent =
+      '0.00';
+
+    return;
+  }
+
+
+  const startParts =
+    start.split(':');
+
+  const endParts =
+    end.split(':');
+
+
+  const startMinutes =
+    Number(startParts[0]) * 60 +
+    Number(startParts[1]);
+
+  const endMinutes =
+    Number(endParts[0]) * 60 +
+    Number(endParts[1]);
+
+
+  if (
+    endMinutes <=
+    startMinutes
+  ) {
+
+    document.getElementById(
+      'manualCalculatedHours'
+    ).textContent =
+      '0.00';
+
+    return;
+  }
+
+
+  const hours =
+    (
+      endMinutes -
+      startMinutes
+    ) / 60;
+
+
+  document.getElementById(
+    'manualCalculatedHours'
+  ).textContent =
+    hours.toFixed(2);
+}
+document.getElementById(
+  'manualStartTime'
+).addEventListener(
+  'change',
+  updateManualCalculatedHours
+);
+
+document.getElementById(
+  'manualEndTime'
+).addEventListener(
+  'change',
+  updateManualCalculatedHours
+);
+function openManualShiftEditor(shiftId) {
+
+  if (!currentAttendanceData) {
+    return;
+  }
+
+  const shift =
+    currentAttendanceData.shifts.find(
+      item =>
+        String(item.shiftId || '') ===
+        String(shiftId || '')
+    );
+
+  if (!shift) {
+    showMessage(
+      'Manual shift could not be found.',
+      'error'
+    );
+    return;
+  }
+
+  document.getElementById(
+    'manualWorkDate'
+  ).value =
+    convertDisplayDateToInput_(
+      shift.workDate
+    );
+
+  document.getElementById(
+    'manualStartTime'
+  ).value =
+    convertTimeToInput_(
+      shift.startTime
+    );
+
+  document.getElementById(
+    'manualEndTime'
+  ).value =
+    convertTimeToInput_(
+      shift.endTime
+    );
+
+  document.getElementById(
+    'manualReason'
+  ).value =
+    shift.reason || '';
+
+  document.getElementById(
+    'manualWorkDate'
+  ).dataset.editShiftId =
+    shiftId;
+
+  updateManualCalculatedHours();
+
+  showMessage(
+    'Editing manual shift. Make changes, then click + Add Shift to save.',
+    'review'
+  );
+}
+
+
+function deleteManualShift(shiftId) {
+
+  if (!shiftId) {
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      'Remove this manual attendance shift?'
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(result => {
+
+      showMessage(
+        result.message,
+        'ready'
+      );
+
+      loadAttendance();
+
+    })
+    .withFailureHandler(error => {
+
+      showMessage(
+        error.message,
+        'error'
+      );
+
+    })
+    .deleteAttendanceManualShift(
+      shiftId
+    );
+}
+
+
+function convertDisplayDateToInput_(dateText) {
+
+  if (!dateText) {
+    return '';
+  }
+
+  const parts =
+    String(dateText).split('/');
+
+  if (parts.length !== 3) {
+    return '';
+  }
+
+  const month =
+    String(parts[0]).padStart(2, '0');
+
+  const day =
+    String(parts[1]).padStart(2, '0');
+
+  const year =
+    parts[2];
+
+  return (
+    year +
+    '-' +
+    month +
+    '-' +
+    day
+  );
+}
+initialize();
+
+</script>
+
+</body>
+</html>

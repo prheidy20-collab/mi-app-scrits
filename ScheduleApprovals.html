@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --navy: #143b5d;
+      --blue: #2477b3;
+      --green: #18864b;
+      --red: #b83232;
+      --amber: #b7791f;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --border: #dce4ed;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      width: min(1100px, 94%);
+      margin: 28px auto;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      color: white;
+      padding: 24px;
+      border-radius: 18px;
+      margin-bottom: 22px;
+    }
+
+    .header h1 {
+      margin: 0 0 6px;
+    }
+
+    .header p {
+      margin: 0;
+      opacity: .9;
+    }
+
+    .request-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 24px rgba(20,59,93,.08);
+    }
+
+    .request-card h3 {
+      margin: 0 0 10px;
+      color: var(--navy);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .panel {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .value {
+      font-weight: 700;
+    }
+
+    select,
+    input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 9px;
+      font-size: 15px;
+      margin-top: 6px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      min-height: 44px;
+      padding: 10px 18px;
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .approve {
+      background: var(--green);
+    }
+
+    .reject {
+      background: var(--red);
+    }
+
+    .secondary {
+      background: var(--blue);
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .warning {
+      background: #fff7e6;
+      border: 1px solid #e2c17a;
+      color: #7a5512;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 14px;
+    }
+
+    .empty {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 30px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 9px;
+      display: none;
+    }
+
+    .success {
+      display: block;
+      background: #e8f7ee;
+      border: 1px solid #9ed6b5;
+      color: #12643a;
+    }
+
+    .error {
+      display: block;
+      background: #fdecec;
+      border: 1px solid #e3aaaa;
+      color: #8f2525;
+    }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Pending Schedule Changes</h1>
+<p>
+  Review student schedule requests and activity-related
+  schedule changes in one place.
+</p>
+    </div>
+
+    <div id="requestsContainer">
+      <div class="empty">Loading pending requests…</div>
+    </div>
+  </div>
+
+  <script>
+    function loadRequests() {
+  google.script.run
+    .withSuccessHandler(renderRequests)
+    .withFailureHandler(error => {
+      document.getElementById(
+        'requestsContainer'
+      ).innerHTML =
+        '<div class="empty">' +
+        escapeHtml(error.message) +
+        '</div>';
+    })
+    .getPendingScheduleChanges();
+}
+
+
+function renderRequests(changes) {
+
+  const container =
+    document.getElementById(
+      'requestsContainer'
+    );
+
+  if (!changes || !changes.length) {
+    container.innerHTML =
+      '<div class="empty">' +
+      'No pending schedule changes.' +
+      '</div>';
+
+    return;
+  }
+
+
+
+changes.forEach(change => {
+
+    const card =
+      document.createElement('div');
+
+    card.className =
+      'request-card';
+
+console.log(
+  'CHANGE TYPE:',
+  change.changeType,
+  change
+);
+
+    // ==================================
+    // STUDENT-REQUESTED CHANGE
+    // ==================================
+
+    if (
+      change.changeType ===
+      'STUDENT_REQUEST'
+    ) {
+
+      card.innerHTML = `
+        <div style="margin-bottom:10px;">
+          <span style="
+            display:inline-block;
+            background:#edf5fb;
+            color:#245b82;
+            padding:5px 9px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:800;
+          ">
+            STUDENT REQUEST
+          </span>
+        </div>
+
+        <h3>
+          ${escapeHtml(change.studentName)}
+        </h3>
+
+        <div class="grid">
+
+          <div class="panel">
+            <div class="label">
+              Schedule Date
+            </div>
+
+            <div class="value">
+              ${escapeHtml(change.scheduleDate)}
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="label">
+              Reason
+            </div>
+
+            <div class="value">
+              ${escapeHtml(change.reason)}
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="label">
+              Current Schedule
+            </div>
+
+            <div class="value">
+              ${escapeHtml(change.currentStart)}
+              ${
+                change.currentEnd
+                  ? '–' +
+                    escapeHtml(
+                      change.currentEnd
+                    )
+                  : ''
+              }
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="label">
+              Requested Schedule
+            </div>
+
+            <div class="value">
+              ${escapeHtml(change.requestedStart)}
+              –
+              ${escapeHtml(change.requestedEnd)}
+            </div>
+          </div>
+
+        </div>
+
+        <div
+          class="panel"
+          style="margin-top:14px"
+        >
+          <div class="label">
+            Comments
+          </div>
+
+          <div class="value">
+            ${
+              escapeHtml(
+                change.comments ||
+                'No comments'
+              )
+            }
+          </div>
+        </div>
+
+        <div
+          class="panel"
+          style="margin-top:14px"
+        >
+          <div class="label">
+            Apply approved change to
+          </div>
+
+          <select
+            id="scope-${change.requestId}"
+            onchange="toggleTemporaryDate(
+              '${change.requestId}'
+            )"
+          >
+
+            <option value="DATE_ONLY">
+              This date only
+            </option>
+
+            <option value="TEMPORARY">
+              Temporary through a date
+            </option>
+
+            <option value="PERMANENT">
+              Permanent recurring schedule
+            </option>
+
+          </select>
+
+          <div
+            id="temporary-${change.requestId}"
+            style="
+              display:none;
+              margin-top:10px;
+            "
+          >
+            <div class="label">
+              Temporary through
+            </div>
+
+            <input
+              id="through-${change.requestId}"
+              type="date"
+            >
+          </div>
+        </div>
+
+        <div
+          id="conflict-${change.requestId}"
+          class="warning"
+          style="display:none"
+        ></div>
+
+        <div class="actions">
+
+          <button
+            class="approve"
+            onclick="
+              approveRequest(
+                '${change.requestId}'
+              )
+            "
+          >
+            Approve
+          </button>
+
+          <button
+            class="reject"
+            onclick="
+              rejectRequest(
+                '${change.requestId}'
+              )
+            "
+          >
+            Reject
+          </button>
+
+        </div>
+
+        <div
+          id="message-${change.requestId}"
+          class="message"
+        ></div>
+      `;
+
+      container.appendChild(card);
+
+      checkConflict(change);
+
+      return;
+    }
+
+    // ==================================
+    // ACTIVITY PARTICIPATION REQUEST
+    // ==================================
+
+    if (
+      change.changeType ===
+      'ACTIVITY_PARTICIPATION'
+    ) {
+
+      card.innerHTML = `
+        <div style="margin-bottom:10px;">
+          <span style="
+            display:inline-block;
+            background:#fdecec;
+            color:#8f2525;
+            padding:5px 9px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:800;
+          ">
+            ACTIVITY PARTICIPATION
+          </span>
+        </div>
+
+        <h3>
+          ${escapeHtml(change.studentName)}
+        </h3>
+
+        <div class="grid">
+
+          <div class="panel">
+            <div class="label">
+              Activity
+            </div>
+
+            <div class="value">
+              ${escapeHtml(change.activityName)}
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="label">
+              Activity Date
+            </div>
+
+            <div class="value">
+              ${escapeHtml(change.activityDate)}
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="label">
+              Activity Time
+            </div>
+
+            <div class="value">
+              ${escapeHtml(change.activityStart)}
+              –
+              ${escapeHtml(change.activityEnd)}
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="label">
+              Requested On
+            </div>
+
+            <div class="value">
+              ${escapeHtml(change.requestedOn)}
+            </div>
+          </div>
+
+        </div>
+
+        <div
+          style="
+            margin-top:14px;
+            padding:10px;
+            border-radius:10px;
+            background:#fff7e6;
+            color:#7a5512;
+            font-weight:700;
+          "
+        >
+          ⏳ Waiting for coordinator approval
+        </div>
+      `;
+
+      container.appendChild(card);
+
+      return;
+    }
+
+        // ==================================
+    // MISSING ATTENDANCE
+    // ==================================
+
+    if (
+      change.changeType ===
+      'MISSING_ATTENDANCE'
+    ) {
+
+      card.innerHTML = `
+        <div style="margin-bottom:10px;">
+          <span style="
+            display:inline-block;
+            background:#fdecec;
+            color:#8f2525;
+            padding:5px 9px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:800;
+          ">
+            MISSING ATTENDANCE
+          </span>
+        </div>
+
+        <h3>
+          ${escapeHtml(change.studentName)}
+        </h3>
+
+        <div class="grid">
+
+          <div class="panel">
+            <div class="label">
+              Scheduled Date
+            </div>
+
+            <div class="value">
+              ${escapeHtml(change.scheduleDate)}
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="label">
+              Expected Start
+            </div>
+
+            <div class="value">
+              ${escapeHtml(change.scheduledStart)}
+            </div>
+          </div>
+
+        </div>
+
+        <div
+          class="warning"
+          style="margin-top:14px;"
+        >
+          No clock-in was recorded for this scheduled shift.
+        </div>
+      `;
+
+      container.appendChild(card);
+
+      return;
+    }
+
+    // ==================================
+    // ACTIVITY-RELATED CHANGE
+    // ==================================
+
+    if (
+      change.changeType ===
+      'ACTIVITY_CHANGE'
+    ) {
+
+      let allocationsHtml = '';
+
+      (change.allocations || [])
+        .forEach(allocation => {
+
+          allocationsHtml += `
+            <div
+              style="
+                padding:10px 0;
+                border-bottom:
+                  1px solid #dce4ed;
+              "
+            >
+              <strong>
+                ${escapeHtml(
+                  allocation.regularDate
+                )}
+              </strong>
+
+              <div class="muted">
+                ${escapeHtml(
+                  allocation.regularStart
+                )}
+                –
+                ${escapeHtml(
+                  allocation.regularEnd
+                )}
+
+                ·
+
+                ${Number(
+                  allocation.replaceHours || 0
+                ).toFixed(2)}
+                hour(s) replaced
+              </div>
+            </div>
+          `;
+        });
+
+
+      card.innerHTML = `
+        <div style="margin-bottom:10px;">
+          <span style="
+            display:inline-block;
+            background:#fff6dd;
+            color:#805d12;
+            padding:5px 9px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:800;
+          ">
+            ACTIVITY CHANGE
+          </span>
+        </div>
+
+        <h3>
+          ${escapeHtml(change.studentName)}
+        </h3>
+
+        <div class="grid">
+
+          <div class="panel">
+            <div class="label">
+              Activity
+            </div>
+
+            <div class="value">
+              ${escapeHtml(
+                change.activityName
+              )}
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="label">
+              Activity Date
+            </div>
+
+            <div class="value">
+              ${escapeHtml(
+                change.activityDate
+              )}
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="label">
+              Activity Time
+            </div>
+
+            <div class="value">
+              ${escapeHtml(
+                change.activityStart
+              )}
+              –
+              ${escapeHtml(
+                change.activityEnd
+              )}
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="label">
+              Regular Hours Being Replaced
+            </div>
+
+            <div class="value">
+              ${Number(
+                change.totalReplacementHours ||
+                0
+              ).toFixed(2)}
+              hour(s)
+            </div>
+          </div>
+
+        </div>
+
+        <div
+          class="panel"
+          style="margin-top:14px"
+        >
+          <div class="label">
+            Regular Schedule Allocation
+          </div>
+
+          ${allocationsHtml}
+        </div>
+
+        <div class="actions">
+
+          <button
+            class="approve"
+            onclick="
+              approveActivityChange(
+                '${change.groupKey}'
+              )
+            "
+          >
+            Approve
+          </button>
+
+          <button
+            class="reject"
+            onclick="
+              rejectActivityChange(
+                '${change.groupKey}'
+              )
+            "
+          >
+            Reject
+          </button>
+
+        </div>
+
+        <div
+          id="message-${change.groupKey}"
+          class="message"
+        ></div>
+      `;
+
+      container.appendChild(card);
+    }
+
+  });
+}
+    function toggleTemporaryDate(requestId) {
+      const scope =
+        document.getElementById('scope-' + requestId).value;
+
+      document.getElementById(
+        'temporary-' + requestId
+      ).style.display =
+        scope === 'TEMPORARY'
+          ? 'block'
+          : 'none';
+    }
+
+    function approveRequest(requestId) {
+      const scope =
+        document.getElementById(
+          'scope-' + requestId
+        ).value;
+
+      const throughDate =
+        document.getElementById(
+          'through-' + requestId
+        ).value;
+
+      if (
+        scope === 'TEMPORARY' &&
+        !throughDate
+      ) {
+        showMessage(
+          requestId,
+          'Choose the date through which the temporary schedule should apply.',
+          false
+        );
+        return;
+      }
+
+      setRequestButtonsDisabled(
+        requestId,
+        true
+      );
+
+      google.script.run
+        .withSuccessHandler(result => {
+          showMessage(
+            requestId,
+            result.message,
+            true
+          );
+
+          setTimeout(
+            loadRequests,
+            800
+          );
+        })
+        .withFailureHandler(error => {
+          showMessage(
+            requestId,
+            error.message,
+            false
+          );
+
+          setRequestButtonsDisabled(
+            requestId,
+            false
+          );
+        })
+        .approveScheduleRequestWithScope(
+          requestId,
+          scope,
+          throughDate
+        );
+    }
+
+    function rejectRequest(requestId) {
+      setRequestButtonsDisabled(
+        requestId,
+        true
+      );
+
+      google.script.run
+        .withSuccessHandler(result => {
+          showMessage(
+            requestId,
+            result.message,
+            true
+          );
+
+          setTimeout(
+            loadRequests,
+            800
+          );
+        })
+        .withFailureHandler(error => {
+          showMessage(
+            requestId,
+            error.message,
+            false
+          );
+
+          setRequestButtonsDisabled(
+            requestId,
+            false
+          );
+        })
+        .rejectScheduleRequest(requestId);
+    }
+
+    function checkConflict(request) {
+      google.script.run
+        .withSuccessHandler(result => {
+          const box =
+            document.getElementById(
+              'conflict-' + request.requestId
+            );
+
+          if (
+            result &&
+            result.hasConflict
+          ) {
+            box.style.display = 'block';
+            box.textContent =
+              '⚠ ' + result.message;
+          }
+        })
+        .checkScheduleRequestConflict(
+          request.studentId,
+          request.scheduleDate,
+          request.requestedStart,
+          request.requestedEnd
+        );
+    }
+
+    function setRequestButtonsDisabled(
+      requestId,
+      disabled
+    ) {
+      const message =
+        document.getElementById(
+          'message-' + requestId
+        );
+
+      const card =
+        message.closest('.request-card');
+
+      card.querySelectorAll('button')
+        .forEach(button => {
+          button.disabled = disabled;
+        });
+    }
+
+    function showMessage(
+      requestId,
+      text,
+      success
+    ) {
+      const element =
+        document.getElementById(
+          'message-' + requestId
+        );
+
+      element.textContent = text;
+
+      element.className =
+        'message ' +
+        (success ? 'success' : 'error');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+  
+  </script>
+</body>
+</html>

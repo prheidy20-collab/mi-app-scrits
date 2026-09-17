@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --navy: #143b5d;
+      --blue: #2477b3;
+      --green: #18864b;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --border: #dce4ed;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      width: min(1180px, 94%);
+      margin: 28px auto;
+    }
+
+    .header {
+      background: linear-gradient(
+        135deg,
+        var(--navy),
+        var(--blue)
+      );
+
+      color: white;
+      padding: 24px;
+      border-radius: 18px;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      margin: 0 0 6px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    input {
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 9px;
+      font-size: 15px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      min-height: 44px;
+      padding: 10px 16px;
+      background: var(--green);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns:
+        repeat(3, minmax(0,1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .summary-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .summary-label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .summary-value {
+      color: var(--navy);
+      font-size: 25px;
+      font-weight: 800;
+      margin-top: 5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      padding: 11px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    th {
+      background: #edf3f8;
+      color: var(--navy);
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 25px;
+    }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 9px;
+      font-weight: 700;
+    }
+
+    .error {
+      display: block;
+      background: #fdecec;
+      border: 1px solid #e3aaaa;
+      color: #8f2525;
+    }
+
+    @media (max-width: 760px) {
+      .summary {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="header">
+      <h1>Final Stipend Report</h1>
+      <p>Approved payroll only.</p>
+    </div>
+
+    <div class="card">
+
+      <div class="controls">
+
+        <div>
+          <label for="month">Payroll Month</label>
+          <input id="month" type="month">
+        </div>
+
+        <button onclick="loadReport()">
+          Generate Final Report
+        </button>
+<button
+  id="excelButton"
+  onclick="exportExcel()"
+  style="background:#18864b;"
+>
+  📊 Export Excel
+</button>
+
+<button
+  id="pdfButton"
+  onclick="exportPDF()"
+  style="background:#b83232;"
+>
+  📄 Export PDF
+</button>
+
+      </div>
+
+      <div id="message" class="message"></div>
+
+      <div class="summary">
+
+        <div class="summary-box">
+          <div class="summary-label">
+            Approved Students
+          </div>
+
+          <div
+            class="summary-value"
+            id="studentCount">
+            0
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <div class="summary-label">
+            Approved Hours
+          </div>
+
+          <div
+            class="summary-value"
+            id="grandHours">
+            0.00
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <div class="summary-label">
+            Grand Total
+          </div>
+
+          <div
+            class="summary-value"
+            id="grandTotal">
+            $0.00
+          </div>
+        </div>
+
+      </div>
+
+      <div style="overflow-x:auto">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Student Number</th>
+              <th>Last 4 SSN</th>
+              <th>Approved Hours</th>
+              <th>Rate</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+
+          <tbody id="reportTable">
+            <tr>
+              <td colspan="6" class="empty">
+                Choose a month and generate the report.
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    function initialize() {
+      const now = new Date();
+
+      document.getElementById('month').value =
+        now.getFullYear() +
+        '-' +
+        String(
+          now.getMonth() + 1
+        ).padStart(2, '0');
+    }
+
+
+    function loadReport() {
+      const month =
+        document.getElementById('month').value;
+
+      if (!month) {
+        showError(
+          'Select a payroll month.'
+        );
+
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(renderReport)
+        .withFailureHandler(error => {
+          showError(error.message);
+        })
+        .getFinalPayrollReport(month);
+    }
+
+
+    function renderReport(data) {
+      const body =
+        document.getElementById('reportTable');
+
+      body.innerHTML = '';
+
+      if (!data.rows.length) {
+        body.innerHTML =
+          '<tr>' +
+          '<td colspan="6" class="empty">' +
+          'No approved payroll records were found.' +
+          '</td>' +
+          '</tr>';
+      }
+
+      data.rows.forEach(row => {
+        const tr =
+          document.createElement('tr');
+
+        const values = [
+          row.studentName,
+          row.studentNumber,
+          row.last4,
+          Number(
+            row.approvedHours
+          ).toFixed(2),
+
+          Number(
+            row.hourlyRate
+          ).toLocaleString(
+            'en-US',
+            {
+              style: 'currency',
+              currency: 'USD'
+            }
+          ),
+
+          Number(
+            row.amount
+          ).toLocaleString(
+            'en-US',
+            {
+              style: 'currency',
+              currency: 'USD'
+            }
+          )
+        ];
+
+        values.forEach(value => {
+          const td =
+            document.createElement('td');
+
+          td.textContent = value;
+
+          tr.appendChild(td);
+        });
+
+        body.appendChild(tr);
+      });
+
+      document.getElementById(
+        'studentCount'
+      ).textContent =
+        data.studentCount;
+
+      document.getElementById(
+        'grandHours'
+      ).textContent =
+        Number(
+          data.grandHours
+        ).toFixed(2);
+
+      document.getElementById(
+        'grandTotal'
+      ).textContent =
+        Number(
+          data.grandTotal
+        ).toLocaleString(
+          'en-US',
+          {
+            style: 'currency',
+            currency: 'USD'
+          }
+        );
+    }
+
+
+    function showError(text) {
+      const box =
+        document.getElementById('message');
+
+      box.textContent = text;
+      box.className = 'message error';
+    }
+
+function exportExcel() {
+  const month =
+    document.getElementById('month').value;
+
+  if (!month) {
+    showError('Select a payroll month.');
+    return;
+  }
+
+  const button =
+    document.getElementById('excelButton');
+
+  button.disabled = true;
+  button.textContent = 'Creating Excel…';
+
+  google.script.run
+    .withSuccessHandler(result => {
+      button.disabled = false;
+      button.textContent = '📊 Export Excel';
+
+      window.open(
+        result.url,
+        '_blank'
+      );
+    })
+    .withFailureHandler(error => {
+      button.disabled = false;
+      button.textContent = '📊 Export Excel';
+
+      showError(error.message);
+    })
+    .exportFinalPayrollExcel(month);
+}
+
+
+function exportPDF() {
+  const month =
+    document.getElementById('month').value;
+
+  if (!month) {
+    showError('Select a payroll month.');
+    return;
+  }
+
+  const button =
+    document.getElementById('pdfButton');
+
+  button.disabled = true;
+  button.textContent = 'Creating PDF…';
+
+  google.script.run
+    .withSuccessHandler(result => {
+      button.disabled = false;
+      button.textContent = '📄 Export PDF';
+
+      window.open(
+        result.url,
+        '_blank'
+      );
+    })
+    .withFailureHandler(error => {
+      button.disabled = false;
+      button.textContent = '📄 Export PDF';
+
+      showError(error.message);
+    })
+    .exportFinalPayrollPDF(month);
+}
+    initialize();
+
+  </script>
+
+</body>
+</html>

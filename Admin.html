@@ -1,0 +1,4808 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --navy: #143b5d;
+      --navy-2: #0f2e49;
+      --blue: #2477b3;
+      --green: #18864b;
+      --red: #b83232;
+      --amber: #b7791f;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --border: #dce4ed;
+      --shadow: 0 10px 30px rgba(20, 59, 93, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 250px 1fr;
+    }
+
+    aside {
+      background: linear-gradient(180deg, var(--navy-2), var(--navy));
+      color: white;
+      padding: 24px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      padding: 4px 8px 26px;
+      border-bottom: 1px solid rgba(255,255,255,.14);
+      margin-bottom: 18px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      opacity: .8;
+      font-size: 13px;
+    }
+
+    nav button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: rgba(255,255,255,.84);
+      text-align: left;
+      padding: 13px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      margin: 3px 0;
+    }
+
+    nav button:hover,
+    nav button.active {
+      background: rgba(255,255,255,.14);
+      color: white;
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    .topbar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 3;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 22px;
+    }
+
+    .topbar span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .content {
+      width: min(1180px, 94%);
+      margin: 26px auto;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .welcome {
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      color: white;
+      border-radius: 18px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .welcome h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .welcome p {
+      margin: 0;
+      opacity: .9;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 19px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .stat .value {
+      color: var(--navy);
+      font-size: 29px;
+      font-weight: 800;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    .card h3 {
+      color: var(--navy);
+      margin: 0 0 15px;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .quick-actions button {
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      padding: 14px;
+      border-radius: 11px;
+      text-align: left;
+      font-weight: 700;
+      color: var(--navy);
+      cursor: pointer;
+    }
+
+    .list-item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .list-item:last-child { border-bottom: 0; }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px;
+      font-size: 15px;
+      background: white;
+    }
+
+    textarea {
+      min-height: 105px;
+      resize: vertical;
+    }
+
+    .primary {
+      border: 0;
+      border-radius: 10px;
+      min-height: 48px;
+      padding: 12px 20px;
+      background: var(--green);
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary.blue { background: var(--blue); }
+
+    .primary:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .message {
+      display: none;
+      margin-top: 16px;
+      padding: 13px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .message.success {
+      display: block;
+      background: #e8f7ee;
+      border: 1px solid #9ed6b5;
+      color: #12643a;
+    }
+
+    .message.error {
+      display: block;
+      background: #fdecec;
+      border: 1px solid #e3aaaa;
+      color: #8f2525;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+    }
+
+    th, td {
+      padding: 11px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    th {
+      background: #edf3f8;
+      color: var(--navy);
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 24px;
+    }
+
+.fiesta-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-weight: 800;
+  color: var(--navy);
+  padding: 10px 4px;
+}
+
+.calendar-day {
+  min-height: 145px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.calendar-day:hover {
+  box-shadow: 0 6px 18px rgba(20, 59, 93, .12);
+  transform: translateY(-1px);
+}
+
+.calendar-day.blank {
+  background: transparent;
+  border: 0;
+  cursor: default;
+}
+
+.calendar-date {
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.calendar-student {
+  background: #edf5fb;
+  color: #245b82;
+  border-radius: 7px;
+  padding: 5px 6px;
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.calendar-student.changed {
+  background: #fff6dd;
+  color: #805d12;
+}
+
+.calendar-student small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.calendar-activity {
+  background: #e8f7ee;
+  color: #12643a;
+  border-radius: 7px;
+  padding: 5px 6px;
+  margin-top: 5px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.calendar-more {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 5px 0;
+  font-weight: 700;
+}
+
+@media (max-width: 1000px) {
+  .fiesta-calendar {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .calendar-weekday {
+    display: none;
+  }
+}
+
+@media (max-width: 650px) {
+  .fiesta-calendar {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-day {
+    min-height: auto;
+  }
+
+  .calendar-day.blank {
+    display: none;
+  }
+}
+
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      aside {
+        height: auto;
+        position: static;
+      }
+      nav {
+        display: flex;
+        overflow-x: auto;
+        gap: 6px;
+      }
+      nav button {
+        width: auto;
+        white-space: nowrap;
+      }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .cards { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .grid, .stats, .quick-actions { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      .topbar { padding: 15px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <h1>FIESTA Hub</h1>
+        <p>Coordinator Portal</p>
+      </div>
+
+      <nav>
+        <button class="active" onclick="showPage('dashboardPage', this, 'Dashboard')">🏠 Dashboard</button>
+        <button onclick="showPage('teamPage', this, 'Team'); loadStudentProfiles();">👥 Team</button>
+        <button onclick="showPage('activityPage', this, 'Create Activity')">📅 Create Activity</button>
+        <button onclick="showPage('schedulePage', this, 'Work Schedule')">⏰ Work Schedule</button>
+        <button onclick="showPage('assignmentPage', this, 'Assign Students'); loadStudentsInto('assignmentStudent'); loadActivities();">
+  👥 Assign Students
+</button>
+
+<button onclick="showPage('scheduleChangesPage', this, 'Pending Schedule Changes'); loadPendingScheduleChanges();">
+  📨 Pending Schedule Changes
+  <span
+    id="pendingScheduleDot"
+    style="
+      display:none;
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      background:red;
+      margin-left:6px;
+      vertical-align:middle;
+    "
+  ></span>
+</button>
+<button onclick="showPage('studentSchedulePage', this, 'Student Schedule'); loadStudentScheduleStudents();">
+  🗓️ Student Schedule
+</button>
+<button onclick="showPage('calendarPage', this, 'Calendar'); loadCalendarMonth();">
+  📆 Calendar
+</button>
+
+    <button onclick="showPage('reportsPage', this, 'Monthly Reports')">
+  📊 Monthly Reports
+</button>
+
+<button onclick="window.top.location.href='https://script.google.com/macros/s/AKfycbw2_OfqKhJ3HmEbO3pab_wc1HLiPbxzHSk87YGJQYApj2NMTiVJwo1JE6UYAMw6PrRsHA/exec?page=attendanceeditor'">
+  ✏️ Attendance Editor
+</button>
+<button onclick="window.top.location.href='https://script.google.com/macros/s/AKfycbw2_OfqKhJ3HmEbO3pab_wc1HLiPbxzHSk87YGJQYApj2NMTiVJwo1JE6UYAMw6PrRsHA/exec?page=attendancepreview'">
+  📋 Students PDF
+</button>
+<button onclick="window.top.location.href='https://script.google.com/macros/s/AKfycbw2_OfqKhJ3HmEbO3pab_wc1HLiPbxzHSk87YGJQYApj2NMTiVJwo1JE6UYAMw6PrRsHA/exec?page=payroll'">
+  💰 Payroll Center
+</button>
+
+<button onclick="window.top.location.href='https://script.google.com/macros/s/AKfycbw2_OfqKhJ3HmEbO3pab_wc1HLiPbxzHSk87YGJQYApj2NMTiVJwo1JE6UYAMw6PrRsHA/exec?page=finalpayroll'">
+  📄 Final Stipend Report
+</button>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <h2 id="pageTitle">Dashboard</h2>
+        <span id="currentDate"></span>
+      </div>
+
+      <div class="content">
+        <section id="dashboardPage" class="page active">
+          <div class="welcome">
+            <h2 id="greeting">Welcome, Heidy</h2>
+            <p>Here is what is happening in FIESTA IX today.</p>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Currently Working</div>
+              <div class="value" id="workingCount">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Today's Activities</div>
+              <div class="value" id="activityCount">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Missing Clock-Ins</div>
+              <div class="value" id="missingCount">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Hours This Month</div>
+              <div class="value" id="monthHours">—</div>
+            </div>
+          </div>
+
+          <div class="cards">
+            <div class="card">
+              <h3>Today's Activities</h3>
+              <div id="todayActivities" class="empty">Loading…</div>
+            </div>
+
+            <div class="card">
+              <h3>Students Working Now</h3>
+              <div id="workingStudents" class="empty">Loading…</div>
+            </div>
+
+            <div class="card">
+              <h3>Needs Attention</h3>
+              <div id="attentionItems" class="empty">Loading…</div>
+            </div>
+
+            <div class="card">
+              <h3>Quick Actions</h3>
+              <div class="quick-actions">
+                <button onclick="goTo('activityPage', 'Create Activity')">➕ Create Activity</button>
+                <button onclick="goTo('schedulePage', 'Work Schedule')">⏰ Add Schedule</button>
+                <button onclick="goTo('assignmentPage', 'Assign Students')">👥 Assign Student</button>
+                <button onclick="goTo('reportsPage', 'Monthly Reports')">📊 Generate Report</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="teamPage" class="page">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+              <div>
+                <h3 style="margin-bottom:5px">Student Profiles</h3>
+                <div class="muted">Administrative records, hours, achievements, and certificates.</div>
+              </div>
+
+             <a
+  href="https://script.google.com/macros/s/AKfycbyWW56E7Om9fTtU4gqO7i1C65EhZvfyKMsOA5E3uhkTGjtu-YheWvUtW3mM9b_t0aJztQ/exec?page=studentwizard"
+  target="_top"
+  class="primary"
+  style="display:inline-flex;align-items:center;text-decoration:none;"
+>
+  ➕ New Student
+</a>
+            </div>
+          </div>
+
+          <div id="studentFormCard" class="card" style="display:none">
+            <h3>Add or Update Student Profile</h3>
+
+            <div class="grid">
+              <div>
+                <label>Student ID used by the clock *</label>
+                <input id="profileStudentId" placeholder="Example: S001">
+              </div>
+
+              <div>
+                <label>University student number *</label>
+                <input id="profileStudentNumber">
+              </div>
+
+              <div class="full">
+                <label>Full name *</label>
+                <input id="profileFullName">
+              </div>
+
+              <div>
+                <label>Last 4 SSN *</label>
+                <input
+                  id="profileLast4"
+                  maxlength="4"
+                  inputmode="numeric"
+                  type="password"
+                  placeholder="Four numbers"
+                >
+              </div>
+
+              <div>
+                <label>Phone</label>
+                <input id="profilePhone" type="tel">
+              </div>
+
+              <div class="full">
+                <label>Email *</label>
+                <input id="profileEmail" type="email">
+              </div>
+
+              <div class="full">
+                <label>Home address</label>
+                <textarea id="profileAddress"></textarea>
+              </div>
+
+              <div class="full">
+                <label>Internal notes</label>
+                <textarea id="profileNotes"></textarea>
+              </div>
+
+              <div class="full" style="display:flex;gap:10px;flex-wrap:wrap">
+                <button
+                  id="saveProfileButton"
+                  class="primary"
+                  onclick="saveStudentProfileFromPage()"
+                >
+                  Save Profile
+                </button>
+
+                <button
+                  class="primary blue"
+                  onclick="toggleStudentForm(false)"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+
+            <div id="profileMessage" class="message"></div>
+          </div>
+
+          <div class="card">
+            <h3>Active Students</h3>
+
+            <div style="overflow-x:auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Student Number</th>
+                    <th>Last 4</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Total Hours</th>
+                    <th></th>
+                  </tr>
+                </thead>
+
+                <tbody id="studentProfilesTable">
+                  <tr>
+                    <td colspan="7" class="empty">Loading student profiles…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+<div class="card" style="margin-top:20px;">
+  <h3>Inactive Students</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Student Number</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody id="inactiveStudentsTable">
+        <tr>
+          <td colspan="5" class="empty">
+            Loading inactive students...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+          <div id="studentDetailCard" class="card" style="display:none">
+            <h3 id="studentDetailName">Student Profile</h3>
+            <div id="studentDetailContent"></div>
+          </div>
+
+<!-- EDIT STUDENT -->
+<div id="editStudentCard"
+     class="card"
+     style="display:none; margin-top:20px;">
+
+  <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+  ">
+    <div>
+      <h3 style="margin:0;">✏️ Edit Student</h3>
+      <div class="muted">
+        Update this student's information.
+      </div>
+    </div>
+
+    <button
+      type="button"
+      onclick="closeStudentEdit()">
+      ✕ Close
+    </button>
+  </div>
+
+
+  <input
+    type="hidden"
+    id="editStudentId">
+
+
+  <div class="grid">
+
+    <div>
+      <label>Full Name</label>
+      <input
+        id="editStudentName"
+        type="text">
+    </div>
+
+    <div>
+      <label>Student Number</label>
+      <input
+        id="editStudentNumber"
+        type="text">
+    </div>
+
+    <div>
+      <label>Last 4 SSN</label>
+      <input
+        id="editStudentLast4"
+        type="text"
+        maxlength="4">
+    </div>
+
+    <div>
+      <label>Email</label>
+      <input
+        id="editStudentEmail"
+        type="email">
+    </div>
+
+    <div>
+      <label>Phone</label>
+      <input
+        id="editStudentPhone"
+        type="text">
+    </div>
+
+  </div>
+
+<div>
+  <label>New PIN</label>
+  <input
+    id="editStudentPin"
+    type="password"
+    inputmode="numeric"
+    maxlength="8"
+    placeholder="Leave blank to keep current PIN"
+  >
+  <div class="muted">
+    Enter 4–8 numbers only if changing the PIN.
+  </div>
+</div>
+
+  <div style="margin-top:16px;">
+    <label>Home Address</label>
+    <input
+      id="editStudentAddress"
+      type="text"
+      style="width:100%;">
+  </div>
+
+
+  <div style="margin-top:16px;">
+    <label>Notes</label>
+    <textarea
+      id="editStudentNotes"
+      rows="3"
+      style="width:100%;"></textarea>
+  </div>
+
+
+  <div
+    id="editStudentMessage"
+    class="message"
+    style="margin-top:15px;">
+  </div>
+
+
+  <div style="
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+  ">
+
+    <button
+      type="button"
+      class="primary blue"
+      onclick="saveStudentEdit()">
+      💾 Save Changes
+    </button>
+
+    <button
+      type="button"
+      onclick="closeStudentEdit()">
+      Cancel
+    </button>
+
+  </div>
+
+</div>
+          
+        </section>
+
+        <section id="activityPage" class="page">
+          <div class="card">
+            <h3>Create a New Activity</h3>
+            <div class="grid">
+              <div class="full">
+                <label>Activity name *</label>
+                <input id="activityName" placeholder="Example: Freshman Orientation Table">
+              </div>
+              <div>
+                <label>Date *</label>
+                <input id="activityDate" type="date">
+              </div>
+              <div>
+                <label>Students needed</label>
+                <input id="studentsNeeded" type="number" min="0" value="1">
+              </div>
+              <div>
+                <label>Starting time *</label>
+                <input id="startTime" type="time">
+              </div>
+              <div>
+                <label>Ending time *</label>
+                <input id="endTime" type="time">
+              </div>
+              <div class="full">
+                <label>Location *</label>
+                <input id="location" placeholder="Example: UPR Ponce">
+              </div>
+              <div class="full">
+                <label>Description</label>
+                <textarea id="description"></textarea>
+              </div>
+              <div class="full">
+                <button id="createButton" class="primary" onclick="saveActivity()">Create Activity</button>
+              </div>
+            </div>
+            <div id="activityMessage" class="message"></div>
+          </div>
+        </section>
+
+       <section id="schedulePage" class="page">
+
+  <div class="card">
+
+    <h3>Usual Student Work Schedule</h3>
+
+    <p class="muted">
+      Enter the student's complete weekly schedule for this semester.
+    </p>
+
+    <div class="grid">
+
+      <div class="full">
+        <label>Student *</label>
+        <select id="scheduleStudent">
+          <option value="">
+            Loading students…
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label>Start Date *</label>
+        <input
+          id="scheduleStartDate"
+          type="date"
+        >
+      </div>
+
+      <div>
+        <label>End Date *</label>
+        <input
+          id="scheduleEndDate"
+          type="date"
+        >
+      </div>
+
+      <div class="full">
+        <label>Location *</label>
+        <input
+          id="scheduleLocation"
+          value="FIESTA IX Office"
+        >
+      </div>
+
+    </div>
+
+
+    <div
+      id="weeklyScheduleDays"
+      style="margin-top:24px;"
+    >
+
+      <!-- MONDAY -->
+      <div
+        class="weekly-day-card"
+        data-day="Monday"
+        style="
+          border:1px solid #dce4ed;
+          border-radius:12px;
+          padding:16px;
+          margin-bottom:14px;
+        "
+      >
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:12px;
+          "
+        >
+          <strong>Monday</strong>
+
+          <button
+            type="button"
+            onclick="addWeeklyScheduleShift('Monday')"
+          >
+            + Add another shift
+          </button>
+        </div>
+
+        <div
+          id="weeklyShiftsMonday"
+          class="weekly-shifts"
+        >
+          <div
+            class="weekly-shift-row"
+            style="
+              display:flex;
+              gap:10px;
+              align-items:end;
+              flex-wrap:wrap;
+              margin-bottom:10px;
+            "
+          >
+            <div>
+              <label>Start</label>
+              <input
+                type="time"
+                class="weekly-start"
+              >
+            </div>
+
+            <div>
+              <label>End</label>
+              <input
+                type="time"
+                class="weekly-end"
+              >
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- TUESDAY -->
+      <div
+        class="weekly-day-card"
+        data-day="Tuesday"
+        style="
+          border:1px solid #dce4ed;
+          border-radius:12px;
+          padding:16px;
+          margin-bottom:14px;
+        "
+      >
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:12px;
+          "
+        >
+          <strong>Tuesday</strong>
+
+          <button
+            type="button"
+            onclick="addWeeklyScheduleShift('Tuesday')"
+          >
+            + Add another shift
+          </button>
+        </div>
+
+        <div
+          id="weeklyShiftsTuesday"
+          class="weekly-shifts"
+        >
+          <div
+            class="weekly-shift-row"
+            style="
+              display:flex;
+              gap:10px;
+              align-items:end;
+              flex-wrap:wrap;
+              margin-bottom:10px;
+            "
+          >
+            <div>
+              <label>Start</label>
+              <input
+                type="time"
+                class="weekly-start"
+              >
+            </div>
+
+            <div>
+              <label>End</label>
+              <input
+                type="time"
+                class="weekly-end"
+              >
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- WEDNESDAY -->
+      <div
+        class="weekly-day-card"
+        data-day="Wednesday"
+        style="
+          border:1px solid #dce4ed;
+          border-radius:12px;
+          padding:16px;
+          margin-bottom:14px;
+        "
+      >
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:12px;
+          "
+        >
+          <strong>Wednesday</strong>
+
+          <button
+            type="button"
+            onclick="addWeeklyScheduleShift('Wednesday')"
+          >
+            + Add another shift
+          </button>
+        </div>
+
+        <div
+          id="weeklyShiftsWednesday"
+          class="weekly-shifts"
+        >
+          <div
+            class="weekly-shift-row"
+            style="
+              display:flex;
+              gap:10px;
+              align-items:end;
+              flex-wrap:wrap;
+              margin-bottom:10px;
+            "
+          >
+            <div>
+              <label>Start</label>
+              <input
+                type="time"
+                class="weekly-start"
+              >
+            </div>
+
+            <div>
+              <label>End</label>
+              <input
+                type="time"
+                class="weekly-end"
+              >
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- THURSDAY -->
+      <div
+        class="weekly-day-card"
+        data-day="Thursday"
+        style="
+          border:1px solid #dce4ed;
+          border-radius:12px;
+          padding:16px;
+          margin-bottom:14px;
+        "
+      >
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:12px;
+          "
+        >
+          <strong>Thursday</strong>
+
+          <button
+            type="button"
+            onclick="addWeeklyScheduleShift('Thursday')"
+          >
+            + Add another shift
+          </button>
+        </div>
+
+        <div
+          id="weeklyShiftsThursday"
+          class="weekly-shifts"
+        >
+          <div
+            class="weekly-shift-row"
+            style="
+              display:flex;
+              gap:10px;
+              align-items:end;
+              flex-wrap:wrap;
+              margin-bottom:10px;
+            "
+          >
+            <div>
+              <label>Start</label>
+              <input
+                type="time"
+                class="weekly-start"
+              >
+            </div>
+
+            <div>
+              <label>End</label>
+              <input
+                type="time"
+                class="weekly-end"
+              >
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- FRIDAY -->
+      <div
+        class="weekly-day-card"
+        data-day="Friday"
+        style="
+          border:1px solid #dce4ed;
+          border-radius:12px;
+          padding:16px;
+          margin-bottom:14px;
+        "
+      >
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:12px;
+          "
+        >
+          <strong>Friday</strong>
+
+          <button
+            type="button"
+            onclick="addWeeklyScheduleShift('Friday')"
+          >
+            + Add another shift
+          </button>
+        </div>
+
+        <div
+          id="weeklyShiftsFriday"
+          class="weekly-shifts"
+        >
+          <div
+            class="weekly-shift-row"
+            style="
+              display:flex;
+              gap:10px;
+              align-items:end;
+              flex-wrap:wrap;
+              margin-bottom:10px;
+            "
+          >
+            <div>
+              <label>Start</label>
+              <input
+                type="time"
+                class="weekly-start"
+              >
+            </div>
+
+            <div>
+              <label>End</label>
+              <input
+                type="time"
+                class="weekly-end"
+              >
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- SATURDAY -->
+      <div
+        class="weekly-day-card"
+        data-day="Saturday"
+        style="
+          border:1px solid #dce4ed;
+          border-radius:12px;
+          padding:16px;
+          margin-bottom:14px;
+        "
+      >
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:12px;
+          "
+        >
+          <strong>Saturday</strong>
+
+          <button
+            type="button"
+            onclick="addWeeklyScheduleShift('Saturday')"
+          >
+            + Add another shift
+          </button>
+        </div>
+
+        <div
+          id="weeklyShiftsSaturday"
+          class="weekly-shifts"
+        >
+          <div
+            class="weekly-shift-row"
+            style="
+              display:flex;
+              gap:10px;
+              align-items:end;
+              flex-wrap:wrap;
+              margin-bottom:10px;
+            "
+          >
+            <div>
+              <label>Start</label>
+              <input
+                type="time"
+                class="weekly-start"
+              >
+            </div>
+
+            <div>
+              <label>End</label>
+              <input
+                type="time"
+                class="weekly-end"
+              >
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- SUNDAY -->
+      <div
+        class="weekly-day-card"
+        data-day="Sunday"
+        style="
+          border:1px solid #dce4ed;
+          border-radius:12px;
+          padding:16px;
+          margin-bottom:14px;
+        "
+      >
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:12px;
+          "
+        >
+          <strong>Sunday</strong>
+
+          <button
+            type="button"
+            onclick="addWeeklyScheduleShift('Sunday')"
+          >
+            + Add another shift
+          </button>
+        </div>
+
+        <div
+          id="weeklyShiftsSunday"
+          class="weekly-shifts"
+        >
+          <div
+            class="weekly-shift-row"
+            style="
+              display:flex;
+              gap:10px;
+              align-items:end;
+              flex-wrap:wrap;
+              margin-bottom:10px;
+            "
+          >
+            <div>
+              <label>Start</label>
+              <input
+                type="time"
+                class="weekly-start"
+              >
+            </div>
+
+            <div>
+              <label>End</label>
+              <input
+                type="time"
+                class="weekly-end"
+              >
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div style="margin-top:18px;">
+
+      <button
+        id="saveScheduleButton"
+        class="primary"
+        onclick="saveWeeklySchedule()"
+      >
+        Save Weekly Schedule
+      </button>
+
+    </div>
+
+    <div
+      id="scheduleMessage"
+      class="message"
+    ></div>
+
+  </div>
+
+</section>
+
+
+        <section id="assignmentPage" class="page">
+  <div class="card">
+    <h3>Assign Student to Activity</h3>
+
+    <div class="grid">
+
+      <div class="full">
+        <label>Student *</label>
+        <select
+          id="assignmentStudent"
+          onchange="refreshReplacementShift()"
+        >
+          <option value="">Loading students...</option>
+        </select>
+      </div>
+
+      <div class="full">
+        <label>Activity *</label>
+        <select
+          id="assignmentActivity"
+          onchange="refreshReplacementShift()"
+        >
+          <option value="">Loading activities...</option>
+        </select>
+      </div>
+
+      <div class="full">
+        <label>How should the activity count? *</label>
+
+        <select
+          id="scheduleTreatment"
+          onchange="handleScheduleTreatmentChange()"
+        >
+          <option value="">Select an option</option>
+
+          <option value="ADDITIONAL HOURS">
+            Additional paid hours
+          </option>
+
+          <option value="REPLACES REGULAR SHIFT">
+            Replaces regular work shift
+          </option>
+
+          <option value="VOLUNTEER UNPAID">
+            Volunteer or unpaid
+          </option>
+        </select>
+      </div>
+
+      <div
+        id="replacementShiftBox"
+        class="full"
+        style="
+          display:none;
+          padding:14px;
+          border:1px solid #dce4ed;
+          border-radius:10px;
+          background:#f8fafc;
+        "
+      >
+        <strong>Regular shift being replaced</strong>
+
+        <div
+          id="replacementShiftDetails"
+          style="margin-top:8px;"
+        >
+          Select a student and activity.
+        </div>
+      </div>
+
+      <div class="full">
+        <button
+          id="saveAssignmentButton"
+          class="primary"
+          onclick="saveAssignment()"
+        >
+          Assign Student
+        </button>
+      </div>
+
+    </div>
+
+    <div
+      id="assignmentMessage"
+      class="message"
+    ></div>
+
+  </div>
+</section>
+
+<section id="scheduleChangesPage" class="page">
+  <div class="card">
+    <h3>Pending Schedule Changes</h3>
+
+    <p class="muted">
+      Review student schedule requests and activity-related schedule changes.
+    </p>
+
+    <div id="pendingScheduleChangesContainer">
+      <div class="empty">
+        Select this page to load pending schedule changes.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="studentSchedulePage" class="page">
+  <div class="card">
+    <h3>Student Schedule</h3>
+
+    <div class="grid">
+      <div class="full">
+        <label>Student</label>
+        <select
+          id="studentScheduleStudent"
+          onchange="loadSelectedStudentSchedule()"
+        >
+          <option value="">Select a student</option>
+        </select>
+      </div>
+    </div>
+
+    <div
+      id="studentScheduleContainer"
+      style="margin-top:18px;"
+    >
+      <div class="empty">
+        Select a student to view their schedule.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="calendarPage" class="page">
+  <div class="card">
+    <h3>FIESTA Hub Calendar</h3>
+
+    <div class="grid">
+      <div>
+        <label>Month</label>
+        <input
+          id="calendarMonth"
+          type="month"
+          onchange="loadCalendarMonth()"
+        >
+      </div>
+    </div>
+
+    <div
+      id="calendarContainer"
+      style="margin-top:18px;"
+    >
+      <div class="empty">
+        Select a month to view the calendar.
+      </div>
+    </div>
+  </div>
+</section>
+
+        <section id="reportsPage" class="page">
+          <div class="card">
+            <h3>Monthly Hours and Stipend Report</h3>
+            <div class="grid">
+              <div>
+                <label>Month</label>
+                <input id="month" type="month">
+              </div>
+              <div style="display:flex;align-items:end">
+                <button class="primary blue" onclick="loadReport()">Generate Report</button>
+              </div>
+            </div>
+
+            <div id="reportMessage" class="message"></div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Shifts</th>
+                  <th>Hours</th>
+                  <th>Rate</th>
+                  <th>Estimated Payment</th>
+                </tr>
+              </thead>
+              <tbody id="results"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const HOURLY_RATE = 10.50;
+
+    function showPage(pageId, button, title) {
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(item => item.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      button.classList.add('active');
+      document.getElementById('pageTitle').textContent = title;
+    }
+
+    function goTo(pageId, title) {
+      const matchingButton = Array.from(document.querySelectorAll('nav button'))
+        .find(button => button.textContent.includes(title.replace('Monthly Reports', 'Monthly Reports')));
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(item => item.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      document.getElementById('pageTitle').textContent = title;
+      if (matchingButton) matchingButton.classList.add('active');
+    }
+
+    function showMessage(id, text, success) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'message ' + (success ? 'success' : 'error');
+    }
+
+    function setToday() {
+      const now = new Date();
+      document.getElementById('currentDate').textContent =
+        now.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+      const hour = now.getHours();
+      const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('greeting').textContent = greeting + ', Heidy';
+
+      document.getElementById('month').value =
+        now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    }
+
+   function loadDashboard() {
+  google.script.run
+    .withSuccessHandler(data => {
+
+      document.getElementById('workingCount').textContent =
+        Number(data.workingNow || 0);
+
+      document.getElementById('activityCount').textContent =
+        (data.todayActivities || []).length;
+
+      document.getElementById('missingCount').textContent =
+        Number(data.missingClockIn || 0);
+
+      // Leave monthly hours blank for now so dashboard stays fast
+      document.getElementById('monthHours').textContent = '—';
+
+      renderList(
+        'todayActivities',
+        data.todayActivities || [],
+        item =>
+          '<strong>' +
+          escapeHtml(item.name) +
+          '</strong><div class="muted">' +
+          escapeHtml(item.time) +
+          ' · ' +
+          escapeHtml(item.location) +
+          '</div>'
+      );
+
+      const workingStudents =
+        (data.studentsToday || []).filter(student =>
+          String(student.status || '').toUpperCase() === 'WORKING'
+        );
+
+      renderList(
+        'workingStudents',
+        workingStudents,
+        student =>
+          '<strong>' +
+          escapeHtml(student.name) +
+          '</strong><div class="muted">' +
+          escapeHtml(student.detail) +
+          '</div>'
+      );
+
+      renderList(
+        'attentionItems',
+        data.attentionItems || [],
+        item =>
+          '<strong>' +
+          escapeHtml(item.title) +
+          '</strong><div class="muted">' +
+          escapeHtml(item.detail) +
+          '</div>'
+      );
+    })
+    .withFailureHandler(error => {
+      [
+        'todayActivities',
+        'workingStudents',
+        'attentionItems'
+      ].forEach(id => {
+        document.getElementById(id).innerHTML =
+          '<div class="empty">' +
+          escapeHtml(
+            error && error.message
+              ? error.message
+              : 'Unable to load dashboard.'
+          ) +
+          '</div>';
+      });
+    })
+    .getMissionControlData();
+}
+
+function loadCalendarMonth() {
+
+  const monthInput =
+    document.getElementById('calendarMonth');
+
+  const container =
+    document.getElementById('calendarContainer');
+
+  // Automatically select current month
+  if (!monthInput.value) {
+    const now = new Date();
+
+    monthInput.value =
+      now.getFullYear() +
+      '-' +
+      String(
+        now.getMonth() + 1
+      ).padStart(2, '0');
+  }
+
+  container.innerHTML =
+    '<div class="empty">Loading calendar...</div>';
+
+  google.script.run
+    .withSuccessHandler(function(data) {
+      renderCalendarMonth(data);
+    })
+    .withFailureHandler(function(error) {
+
+      container.innerHTML =
+        '<div class="empty">' +
+        escapeHtml(error.message) +
+        '</div>';
+
+    })
+    .getCalendarMonthData(
+      monthInput.value
+    );
+}
+function renderCalendarMonth(data) {
+
+  const container =
+    document.getElementById(
+      'calendarContainer'
+    );
+
+ const days =
+  Object.keys(data.days || {})
+    .sort(function(a, b) {
+      return a.localeCompare(b);
+    })
+    .map(function(dateKey) {
+      return data.days[dateKey];
+    });
+
+  if (!days.length) {
+    container.innerHTML =
+      '<div class="empty">No calendar data found.</div>';
+    return;
+  }
+
+  let html = `
+    <h3 style="margin-bottom:15px;">
+      ${escapeHtml(data.monthLabel)}
+    </h3>
+
+    <div class="fiesta-calendar">
+
+      <div class="calendar-weekday">Sun</div>
+      <div class="calendar-weekday">Mon</div>
+      <div class="calendar-weekday">Tue</div>
+      <div class="calendar-weekday">Wed</div>
+      <div class="calendar-weekday">Thu</div>
+      <div class="calendar-weekday">Fri</div>
+      <div class="calendar-weekday">Sat</div>
+  `;
+
+  const firstDate =
+    new Date(
+      days[0].date + 'T12:00:00'
+    );
+
+  const blankDays =
+    firstDate.getDay();
+
+  for (
+    let i = 0;
+    i < blankDays;
+    i++
+  ) {
+    html +=
+      '<div class="calendar-day blank"></div>';
+  }
+
+
+  days.forEach(function(day) {
+
+    const students =
+      day.students || [];
+
+    const activities =
+      day.activities || [];
+
+    html += `
+      <div
+        class="calendar-day"
+        onclick="openCalendarDay('${day.date}')"
+      >
+
+        <div class="calendar-date">
+          ${day.dayNumber}
+        </div>
+    `;
+
+
+    // STUDENTS
+    students
+      .slice(0, 3)
+      .forEach(function(student) {
+
+        let className =
+          'calendar-student';
+
+        if (
+          student.source === 'CHANGE'
+        ) {
+          className += ' changed';
+        }
+
+        html += `
+          <div class="${className}">
+            👤 ${escapeHtml(student.studentName)}
+            <small>
+              ${escapeHtml(student.start)}
+              –
+              ${escapeHtml(student.end)}
+            </small>
+          </div>
+        `;
+      });
+
+
+    if (students.length > 3) {
+      html += `
+        <div class="calendar-more">
+          +${students.length - 3} more
+        </div>
+      `;
+    }
+
+
+    // ACTIVITIES
+    if (activities.length) {
+
+      const uniqueNames =
+        [
+          ...new Set(
+            activities.map(
+              item =>
+                item.activityName
+            )
+          )
+        ];
+
+      uniqueNames
+        .slice(0, 2)
+        .forEach(function(name) {
+
+          html += `
+            <div class="calendar-activity">
+              📅 ${escapeHtml(name)}
+            </div>
+          `;
+        });
+    }
+
+
+    html += '</div>';
+  });
+
+
+  html += '</div>';
+
+  container.innerHTML =
+    html;
+
+  window.fiestaCalendarData =
+    data;
+}
+function openCalendarDay(dateKey) {
+
+  const data =
+    window.fiestaCalendarData;
+
+  if (
+    !data ||
+    !data.days ||
+    !data.days[dateKey]
+  ) {
+    return;
+  }
+
+  const day =
+    data.days[dateKey];
+
+  let message =
+    day.displayDate + '\n\n';
+
+
+  if (day.students.length) {
+
+    message +=
+      'STUDENTS SCHEDULED:\n';
+
+    day.students.forEach(
+      function(student) {
+
+        message +=
+          '• ' +
+          student.studentName +
+          ' — ' +
+          student.start +
+          ' to ' +
+          student.end;
+
+        if (
+          student.source === 'CHANGE'
+        ) {
+          message +=
+            ' [Schedule Change]';
+        }
+
+        message += '\n';
+      }
+    );
+
+  } else {
+
+    message +=
+      'No students scheduled.\n';
+  }
+
+
+  if (day.activities.length) {
+
+    message +=
+      '\nACTIVITIES:\n';
+
+    day.activities.forEach(
+      function(activity) {
+
+        message +=
+          '• ' +
+          activity.activityName +
+          ' — ' +
+          activity.studentName +
+          ' (' +
+          activity.start +
+          '–' +
+          activity.end +
+          ')\n';
+      }
+    );
+  }
+
+  alert(message);
+}
+
+function openStudentEdit(studentId) {
+
+  if (!studentId) {
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(profile) {
+
+      document.getElementById(
+        'editStudentCard'
+      ).style.display = 'block';
+
+      document.getElementById(
+        'studentDetailCard'
+      ).style.display = 'none';
+
+      document.getElementById(
+        'editStudentId'
+      ).value =
+        profile.studentId || '';
+
+      document.getElementById(
+        'editStudentName'
+      ).value =
+        profile.fullName || '';
+
+      document.getElementById(
+        'editStudentNumber'
+      ).value =
+        profile.studentNumber || '';
+
+      document.getElementById(
+        'editStudentLast4'
+      ).value =
+        profile.last4 || '';
+
+      document.getElementById(
+        'editStudentEmail'
+      ).value =
+        profile.email || '';
+
+      document.getElementById(
+        'editStudentPhone'
+      ).value =
+        profile.phone || '';
+
+      document.getElementById(
+        'editStudentAddress'
+      ).value =
+        profile.address || '';
+
+      document.getElementById(
+        'editStudentNotes'
+      ).value =
+        profile.notes || '';
+
+      document.getElementById(
+        'editStudentMessage'
+      ).className =
+        'message';
+
+      document.getElementById(
+        'editStudentMessage'
+      ).textContent = '';
+
+      document.getElementById(
+        'editStudentCard'
+      ).scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+
+      document.getElementById(
+  'editStudentPin'
+).value = '';
+
+    })
+    .withFailureHandler(function(error) {
+
+      alert(
+        error && error.message
+          ? error.message
+          : 'Unable to load student profile.'
+      );
+
+    })
+    .getStudentProfileDetail(
+      studentId
+    );
+}
+
+function closeStudentEdit() {
+
+  document.getElementById(
+    'editStudentCard'
+  ).style.display = 'none';
+
+  document.getElementById(
+    'editStudentMessage'
+  ).className =
+    'message';
+
+  document.getElementById(
+    'editStudentMessage'
+  ).textContent = '';
+}
+
+function loadStudentScheduleStudents() {
+
+  const select =
+    document.getElementById(
+      'studentScheduleStudent'
+    );
+
+  select.innerHTML =
+    '<option value="">Loading students...</option>';
+
+  google.script.run
+    .withSuccessHandler(students => {
+
+      select.innerHTML =
+        '<option value="">Select a student</option>';
+
+      students.forEach(student => {
+
+        const option =
+          document.createElement('option');
+
+        option.value =
+          student.studentId;
+
+        option.textContent =
+          student.studentName;
+
+        select.appendChild(option);
+      });
+
+    })
+    .withFailureHandler(error => {
+
+      select.innerHTML =
+        '<option value="">Unable to load students</option>';
+
+      console.error(error);
+
+    })
+    .getStudentsForSchedule();
+}
+
+
+function loadSelectedStudentSchedule() {
+
+  const studentId =
+    document.getElementById(
+      'studentScheduleStudent'
+    ).value;
+
+  const container =
+    document.getElementById(
+      'studentScheduleContainer'
+    );
+
+  if (!studentId) {
+    container.innerHTML =
+      '<div class="empty">' +
+      'Select a student to view their schedule.' +
+      '</div>';
+
+    return;
+  }
+
+  container.innerHTML =
+    '<div class="empty">Loading student schedule...</div>';
+
+  google.script.run
+    .withSuccessHandler(data => {
+
+      // We will build this display
+      // after the backend function exists.
+      let regularHtml = '';
+
+if (
+  data.regularSchedules &&
+  data.regularSchedules.length
+) {
+
+  data.regularSchedules.forEach(function(schedule) {
+
+    regularHtml += `
+      <div
+        style="
+          padding:12px;
+          border:1px solid #dce4ed;
+          border-radius:10px;
+          margin-top:8px;
+          background:#f8fafc;
+        "
+      >
+        <strong>
+          ${escapeHtml(schedule.day)}
+        </strong>
+
+        <div class="muted">
+          ${escapeHtml(schedule.start)}
+          –
+          ${escapeHtml(schedule.end)}
+          ·
+          ${escapeHtml(schedule.location)}
+        </div>
+      </div>
+    `;
+  });
+
+} else {
+
+  regularHtml =
+    '<div class="empty">No regular schedule.</div>';
+}
+
+
+let changesHtml = '';
+
+if (
+  data.approvedChanges &&
+  data.approvedChanges.length
+) {
+
+  data.approvedChanges.forEach(function(change) {
+
+    const isActivity =
+      String(
+        change.exceptionType || ''
+      ).toUpperCase()
+        .includes('ACTIVITY');
+
+    changesHtml += `
+      <div
+        style="
+          padding:12px;
+          border:1px solid #dce4ed;
+          border-radius:10px;
+          margin-top:8px;
+          background:white;
+        "
+      >
+
+        <div style="margin-bottom:6px;">
+          <span
+            style="
+              display:inline-block;
+              padding:4px 8px;
+              border-radius:999px;
+              font-size:11px;
+              font-weight:800;
+              background:${isActivity ? '#fff6dd' : '#edf5fb'};
+              color:${isActivity ? '#805d12' : '#245b82'};
+            "
+          >
+            ${isActivity
+              ? 'ACTIVITY CHANGE'
+              : 'SCHEDULE CHANGE'}
+          </span>
+        </div>
+
+        ${
+          change.activityName
+            ? `
+              <strong>
+                ${escapeHtml(change.activityName)}
+              </strong>
+            `
+            : ''
+        }
+
+        <div class="muted" style="margin-top:5px;">
+          Original:
+          ${escapeHtml(change.originalDate)}
+          ·
+          ${escapeHtml(change.originalStart)}
+          –
+          ${escapeHtml(change.originalEnd)}
+        </div>
+
+        <div class="muted">
+          Replacement:
+          ${escapeHtml(change.replacementDate)}
+          ·
+          ${escapeHtml(change.replacementStart)}
+          –
+          ${escapeHtml(change.replacementEnd)}
+        </div>
+
+        <div class="muted">
+          Changed:
+          ${Number(
+            change.changedHours || 0
+          ).toFixed(2)}
+          hour(s)
+        </div>
+
+      </div>
+    `;
+  });
+
+} else {
+
+  changesHtml =
+    '<div class="empty">No approved schedule changes.</div>';
+}
+
+
+let activitiesHtml = '';
+
+if (
+  data.activities &&
+  data.activities.length
+) {
+
+  data.activities.forEach(function(activity) {
+
+    activitiesHtml += `
+      <div
+        style="
+          padding:12px;
+          border:1px solid #dce4ed;
+          border-radius:10px;
+          margin-top:8px;
+          background:#f8fafc;
+        "
+      >
+        <strong>
+          ${escapeHtml(activity.activityName)}
+        </strong>
+
+        <div class="muted">
+          ${escapeHtml(activity.date)}
+          ·
+          ${escapeHtml(activity.start)}
+          –
+          ${escapeHtml(activity.end)}
+        </div>
+
+        <div class="muted">
+          ${escapeHtml(activity.location)}
+        </div>
+      </div>
+    `;
+  });
+
+} else {
+
+  activitiesHtml =
+    '<div class="empty">No assigned activities.</div>';
+}
+
+
+container.innerHTML = `
+  <div
+    style="
+      padding:18px;
+      border-radius:14px;
+      background:linear-gradient(
+        135deg,
+        #143b5d,
+        #2477b3
+      );
+      color:white;
+      margin-bottom:18px;
+    "
+  >
+    <h3 style="margin:0;">
+      ${escapeHtml(data.studentName)}
+    </h3>
+
+    <div style="margin-top:5px;opacity:.85;">
+      Student Schedule Overview
+    </div>
+  </div>
+
+
+  <div class="cards">
+
+    <div class="card">
+      <h3>
+        🗓️ Regular Weekly Schedule
+      </h3>
+
+      ${regularHtml}
+    </div>
+
+
+    <div class="card">
+      <h3>
+        🔄 Approved Schedule Changes
+      </h3>
+
+      ${changesHtml}
+    </div>
+
+  </div>
+
+
+  <div class="card">
+    <h3>
+      📅 Assigned Activities
+    </h3>
+
+    ${activitiesHtml}
+  </div>
+`;
+
+    })
+    .withFailureHandler(error => {
+
+      container.innerHTML =
+        '<div class="empty">' +
+        escapeHtml(
+          error && error.message
+            ? error.message
+            : 'Unable to load student schedule.'
+        ) +
+        '</div>';
+
+    })
+    .getStudentScheduleViewerData(
+      studentId
+    );
+}
+
+function loadPendingScheduleChanges() {
+
+  const container =
+    document.getElementById(
+      'pendingScheduleChangesContainer'
+    );
+
+  container.innerHTML =
+    '<div class="empty">Loading pending schedule changes...</div>';
+
+  google.script.run
+    .withSuccessHandler(changes => {
+const pendingDot =
+  document.getElementById(
+    'pendingScheduleDot'
+  );
+
+if (pendingDot) {
+  pendingDot.style.display =
+    changes && changes.length
+      ? 'inline-block'
+      : 'none';
+}
+      if (!changes || !changes.length) {
+        container.innerHTML =
+          '<div class="empty">No pending schedule changes.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+
+      changes.forEach(change => {
+
+        const card =
+          document.createElement('div');
+
+        card.className = 'card';
+
+        // -------------------------
+        // STUDENT REQUEST
+        // -------------------------
+        if (
+          change.changeType ===
+          'STUDENT_REQUEST'
+        ) {
+
+          card.innerHTML = `
+            <div style="margin-bottom:10px;">
+              <span style="
+                display:inline-block;
+                background:#edf5fb;
+                color:#245b82;
+                padding:5px 9px;
+                border-radius:999px;
+                font-size:12px;
+                font-weight:800;
+              ">
+                STUDENT REQUEST
+              </span>
+            </div>
+
+            <h3>${escapeHtml(change.studentName)}</h3>
+
+            <div class="grid">
+
+              <div>
+                <label>Schedule Date</label>
+                <div>
+                  ${escapeHtml(change.scheduleDate)}
+                </div>
+              </div>
+
+              <div>
+                <label>Reason</label>
+                <div>
+                  ${escapeHtml(change.reason)}
+                </div>
+              </div>
+
+              <div>
+                <label>Current Schedule</label>
+                <div>
+                  ${escapeHtml(change.currentStart)}
+                  ${
+                    change.currentEnd
+                      ? ' – ' +
+                        escapeHtml(change.currentEnd)
+                      : ''
+                  }
+                </div>
+              </div>
+
+              <div>
+                <label>Requested Schedule</label>
+                <div>
+                  ${escapeHtml(change.requestedStart)}
+                  –
+                  ${escapeHtml(change.requestedEnd)}
+                </div>
+              </div>
+
+            </div>
+
+            <div style="margin-top:14px;">
+              <label>Comments</label>
+              <div>
+                ${escapeHtml(
+                  change.comments ||
+                  'No comments'
+                )}
+              </div>
+            </div>
+
+            <div style="margin-top:14px;">
+              <label>Apply approved change to</label>
+
+              <select
+                id="scope-${change.requestId}"
+                onchange="
+                  togglePendingTemporaryDate(
+                    '${change.requestId}'
+                  )
+                "
+              >
+                <option value="DATE_ONLY">
+                  This date only
+                </option>
+
+                <option value="TEMPORARY">
+                  Temporary through a date
+                </option>
+
+                <option value="PERMANENT">
+                  Permanent recurring schedule
+                </option>
+              </select>
+
+              <div
+                id="pendingTemporary-${change.requestId}"
+                style="display:none;margin-top:10px;"
+              >
+                <label>Temporary through</label>
+
+                <input
+                  id="pendingThrough-${change.requestId}"
+                  type="date"
+                >
+              </div>
+            </div>
+
+            <div style="margin-top:16px;display:flex;gap:10px;">
+
+              <button
+                class="primary"
+                onclick="
+                  approvePendingStudentRequest(
+                    '${change.requestId}'
+                  )
+                "
+              >
+                Approve
+              </button>
+
+              <button
+                class="primary"
+                style="background:#b83232;"
+                onclick="
+                  rejectPendingStudentRequest(
+                    '${change.requestId}'
+                  )
+                "
+              >
+                Reject
+              </button>
+
+            </div>
+          `;
+        }
+        // -------------------------
+        // ACTIVITY PARTICIPATION
+        // -------------------------
+        if (
+          change.changeType ===
+          'ACTIVITY_PARTICIPATION'
+        ) {
+
+let replacementHtml = '';
+
+if (
+  change.hoursTreatment ===
+  'REPLACES REGULAR SHIFT'
+) {
+  try {
+    const allocations =
+      JSON.parse(
+        change.replacementDetails || '[]'
+      );
+
+    allocations.forEach(function(item) {
+      replacementHtml +=
+        '<div>' +
+          escapeHtml(item.date) +
+          ' | ' +
+          escapeHtml(item.regularStart) +
+          ' - ' +
+          escapeHtml(item.regularEnd) +
+          ' | Replace: ' +
+          Number(item.replaceHours || 0).toFixed(2) +
+          ' hrs' +
+        '</div>';
+    });
+  } catch (error) {
+    replacementHtml =
+      'Unable to display replacement hours.';
+  }
+}
+
+          card.innerHTML = `
+            <div style="margin-bottom:10px;">
+              <span style="
+                display:inline-block;
+                background:#fdecec;
+                color:#8f2525;
+                padding:5px 9px;
+                border-radius:999px;
+                font-size:12px;
+                font-weight:800;
+              ">
+                ACTIVITY PARTICIPATION
+              </span>
+            </div>
+
+            <h3>${escapeHtml(change.studentName)}</h3>
+
+            <div class="grid">
+
+              <div>
+                <label>Activity</label>
+                <div>
+                  ${escapeHtml(change.activityName)}
+                </div>
+              </div>
+
+              <div>
+                <label>Activity Date</label>
+                <div>
+                  ${escapeHtml(change.activityDate)}
+                </div>
+              </div>
+
+              <div>
+                <label>Activity Time</label>
+                <div>
+                  ${escapeHtml(change.activityStart)}
+                  –
+                  ${escapeHtml(change.activityEnd)}
+                </div>
+              </div>
+
+              <div>
+                <label>Requested On</label>
+                <div>
+                  ${escapeHtml(change.requestedOn)}
+                </div>
+              </div>
+
+<div>
+  <label>Hours Treatment</label>
+  <div>
+    ${escapeHtml(
+      change.hoursTreatment || 'Not selected'
+    )}
+  </div>
+</div>
+
+${
+  replacementHtml
+    ? `
+      <div style="grid-column:1 / -1;">
+        <label>Replacement Details</label>
+        <div
+          style="
+            margin-top:6px;
+            padding:10px;
+            border-radius:8px;
+            background:#f7f9fb;
+            line-height:1.6;
+          "
+        >
+          ${replacementHtml}
+        </div>
+      </div>
+    `
+    : ''
+}
+
+            </div>
+
+           <div
+  style="
+    margin-top:14px;
+    padding:10px;
+    border-radius:10px;
+    background:#fff7e6;
+    color:#7a5512;
+    font-weight:700;
+  "
+>
+  ⏳ Waiting for coordinator approval
+</div>
+
+<div
+  style="
+    margin-top:14px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  "
+>
+  <button
+    type="button"
+    class="btn primary"
+    onclick="approveActivityParticipationUI('${change.requestId}')"
+  >
+    ✅ Approve
+  </button>
+
+  <button
+    type="button"
+    class="btn danger"
+    onclick="rejectActivityParticipationUI('${change.requestId}')"
+  >
+    ❌ Reject
+  </button>
+</div>
+          `;
+        }
+        // -------------------------
+        // MISSING ATTENDANCE
+        // -------------------------
+        if (
+          change.changeType ===
+          'MISSING_ATTENDANCE'
+        ) {
+
+          card.innerHTML = `
+            <div style="margin-bottom:10px;">
+              <span style="
+                display:inline-block;
+                background:#fdecec;
+                color:#8f2525;
+                padding:5px 9px;
+                border-radius:999px;
+                font-size:12px;
+                font-weight:800;
+              ">
+                MISSING ATTENDANCE
+              </span>
+            </div>
+
+            <h3>
+              ${escapeHtml(change.studentName)}
+            </h3>
+
+            <div class="grid">
+
+              <div>
+                <label>
+                  Scheduled Date
+                </label>
+
+                <div>
+                  ${escapeHtml(
+                    change.scheduleDate
+                  )}
+                </div>
+              </div>
+
+                             <div>
+                <label>
+                  Expected Start
+                </label>
+
+                <div>
+                  ${escapeHtml(
+                    change.scheduledStart
+                  )}
+                </div>
+              </div>
+
+  <div>
+  <label>
+    Expected End
+  </label>
+
+  <div>
+    ${escapeHtml(
+      change.scheduledEnd || ''
+    )}
+  </div>
+</div>
+
+<div>
+  <label>
+    Scheduled Hours
+  </label>
+
+  <div>
+    ${escapeHtml(
+      String(
+        change.scheduledHours || 0
+      )
+    )}
+  </div>
+</div>
+
+            </div>
+
+            <div
+              style="
+                margin-top:14px;
+                padding:12px;
+                background:#fff6f6;
+                border:1px solid #efcaca;
+                border-radius:10px;
+              "
+            >
+              No clock-in was recorded for this scheduled shift.
+            </div>
+
+            <div
+  style="
+    margin-top:14px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  "
+>
+  <button
+    type="button"
+    onclick="markMissingAttendanceWorked('${escapeHtml(change.alertId)}')"
+  >
+    Worked
+  </button>
+
+  <button
+    type="button"
+    onclick="excuseMissingAttendanceUI('${escapeHtml(change.alertId)}')"
+  >
+    Excuse
+  </button>
+
+  <button
+    type="button"
+    onclick="markMissingAttendanceNotExcusedUI('${escapeHtml(change.alertId)}')"
+  >
+    Not Excused
+  </button>
+</div>
+          `;
+        }
+        // -------------------------
+        // ACTIVITY CHANGE
+        // -------------------------
+        if (
+          change.changeType ===
+          'ACTIVITY_CHANGE'
+        ) {
+
+          let allocationsHtml = '';
+
+          (change.allocations || [])
+            .forEach(allocation => {
+
+              allocationsHtml += `
+                <div
+                  style="
+                    margin-top:8px;
+                    padding:10px;
+                    background:#f8fafc;
+                    border:1px solid #dce4ed;
+                    border-radius:8px;
+                  "
+                >
+                  <strong>
+                    ${escapeHtml(
+                      allocation.regularDate
+                    )}
+                  </strong>
+
+                  <div class="muted">
+                    ${escapeHtml(
+                      allocation.regularStart
+                    )}
+                    –
+                    ${escapeHtml(
+                      allocation.regularEnd
+                    )}
+                    ·
+                    ${Number(
+                      allocation.replaceHours || 0
+                    ).toFixed(2)}
+                    hour(s)
+                  </div>
+                </div>
+              `;
+            });
+
+          card.innerHTML = `
+            <div style="margin-bottom:10px;">
+              <span style="
+                display:inline-block;
+                background:#fff6dd;
+                color:#805d12;
+                padding:5px 9px;
+                border-radius:999px;
+                font-size:12px;
+                font-weight:800;
+              ">
+                ACTIVITY CHANGE
+              </span>
+            </div>
+
+            <h3>${escapeHtml(change.studentName)}</h3>
+
+            <div class="grid">
+
+              <div>
+                <label>Activity</label>
+                <div>
+                  ${escapeHtml(change.activityName)}
+                </div>
+              </div>
+
+              <div>
+                <label>Activity Date</label>
+                <div>
+                  ${escapeHtml(change.activityDate)}
+                </div>
+              </div>
+
+              <div>
+                <label>Activity Time</label>
+                <div>
+                  ${escapeHtml(change.activityStart)}
+                  –
+                  ${escapeHtml(change.activityEnd)}
+                </div>
+              </div>
+
+              <div>
+                <label>Hours Being Replaced</label>
+                <div>
+                  ${Number(
+                    change.totalReplacementHours || 0
+                  ).toFixed(2)}
+                  hour(s)
+                </div>
+              </div>
+
+            </div>
+
+            <div style="margin-top:14px;">
+              <label>Regular Schedule Allocation</label>
+              ${allocationsHtml}
+            </div>
+
+            <div style="margin-top:16px;display:flex;gap:10px;">
+
+              <button
+                class="primary"
+                onclick="
+                  approvePendingActivityChangeUI(
+  '${change.groupKey}'
+)
+                "
+              >
+                Approve
+              </button>
+
+              <button
+                class="primary"
+                style="background:#b83232;"
+                onclick="
+                  rejectPendingActivityChangeUI(
+  '${change.groupKey}'
+)
+                "
+              >
+                Reject
+              </button>
+
+            </div>
+          `;
+        }
+
+        container.appendChild(card);
+      });
+
+    })
+    .withFailureHandler(error => {
+
+      container.innerHTML =
+        '<div class="empty">' +
+        escapeHtml(
+          error && error.message
+            ? error.message
+            : 'Unable to load schedule changes.'
+        ) +
+        '</div>';
+
+    })
+    .getPendingScheduleChanges();
+}
+
+function approvePendingActivityChangeUI(groupKey) {
+
+  if (!groupKey) {
+    alert('Activity change ID is missing.');
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      alert(
+        result && result.message
+          ? result.message
+          : 'Activity schedule change approved.'
+      );
+
+      loadPendingScheduleChanges();
+      loadDashboard();
+
+    })
+    .withFailureHandler(function(error) {
+
+      alert(
+        error && error.message
+          ? error.message
+          : 'Unable to approve activity schedule change.'
+      );
+
+    })
+    .approvePendingActivityChange(
+      groupKey
+    );
+}
+
+
+function rejectPendingActivityChangeUI(groupKey) {
+
+  if (!groupKey) {
+    alert('Activity change ID is missing.');
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      alert(
+        result && result.message
+          ? result.message
+          : 'Activity schedule change rejected.'
+      );
+
+      loadPendingScheduleChanges();
+      loadDashboard();
+
+    })
+    .withFailureHandler(function(error) {
+
+      alert(
+        error && error.message
+          ? error.message
+          : 'Unable to reject activity schedule change.'
+      );
+
+    })
+    .rejectPendingActivityChange(
+      groupKey
+    );
+}
+
+    function renderList(id, items, renderer) {
+      const el = document.getElementById(id);
+      if (!items || !items.length) {
+        el.innerHTML = '<div class="empty">Nothing to show.</div>';
+        return;
+      }
+      el.innerHTML = items.map(item => '<div class="list-item">' + renderer(item) + '</div>').join('');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function loadStudentsInto(selectId) {
+      google.script.run
+        .withSuccessHandler(students => {
+          const select = document.getElementById(selectId);
+          select.innerHTML = '<option value="">Select a student</option>';
+
+          students.forEach(student => {
+            const option = document.createElement('option');
+            option.value = student.studentId;
+            option.textContent = student.studentName;
+            select.appendChild(option);
+          });
+        })
+        .getStudentsForSchedule();
+    }
+
+        function loadActivities() {
+  google.script.run
+    .withSuccessHandler(activities => {
+      const select =
+        document.getElementById(
+          'assignmentActivity'
+        );
+
+      select.innerHTML =
+        '<option value="">Select an activity</option>';
+
+      activities.forEach(activity => {
+        const option =
+          document.createElement('option');
+
+        option.value =
+          activity.activityId;
+
+        option.textContent =
+          activity.activityName +
+          ' — ' +
+          activity.date +
+          ' — ' +
+          activity.startTime +
+          ' to ' +
+          activity.endTime;
+
+        select.appendChild(option);
+      });
+    })
+    .withFailureHandler(error => {
+      const select =
+        document.getElementById(
+          'assignmentActivity'
+        );
+
+      select.innerHTML =
+        '<option value="">Unable to load activities</option>';
+
+      console.error(error);
+    })
+    .getActivitiesForAssignment();
+}
+  function approveActivityParticipationUI(requestId) {
+
+  if (!requestId) {
+    alert('Participation Request ID is missing.');
+    return;
+  }
+
+  if (
+    !confirm(
+      'Approve this activity participation request?'
+    )
+  ) {
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      alert(
+        result && result.message
+          ? result.message
+          : 'Activity participation approved.'
+      );
+
+      loadPendingScheduleChanges();
+
+    })
+    .withFailureHandler(function(error) {
+
+      alert(
+        '⚠️ ' +
+        String(
+          error &&
+          error.message
+            ? error.message
+            : error
+        )
+      );
+
+    })
+    .approveActivityParticipationRequest(
+      requestId
+    );
+} 
+function rejectActivityParticipationUI(requestId) {
+
+  if (!requestId) {
+    alert('Participation Request ID is missing.');
+    return;
+  }
+
+  if (
+    !confirm(
+      'Reject this activity participation request?'
+    )
+  ) {
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      alert(
+        result && result.message
+          ? result.message
+          : 'Activity participation request rejected.'
+      );
+
+      loadPendingScheduleChanges();
+
+    })
+    .withFailureHandler(function(error) {
+
+      alert(
+        '⚠️ ' +
+        String(
+          error &&
+          error.message
+            ? error.message
+            : error
+        )
+      );
+
+    })
+    .rejectActivityParticipationRequest(
+      requestId
+    );
+}
+function markMissingAttendanceWorked(alertId) {
+
+  if (!alertId) {
+    alert('Attendance Alert ID is missing.');
+    return;
+  }
+
+  if (
+    !confirm(
+      'Mark this student as WORKED and add the scheduled hours as a manual attendance shift?'
+    )
+  ) {
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      alert(
+        result && result.message
+          ? result.message
+          : 'Attendance marked as worked.'
+      );
+
+      loadPendingScheduleChanges();
+
+    })
+    .withFailureHandler(function(error) {
+
+      alert(
+        '⚠️ ' +
+        String(
+          error &&
+          error.message
+            ? error.message
+            : error
+        )
+      );
+
+    })
+    .resolveMissingAttendanceAsWorked(
+      alertId
+    );
+}
+    function saveActivity() {
+      const formData = {
+        activityName: document.getElementById('activityName').value.trim(),
+        date: document.getElementById('activityDate').value,
+        startTime: document.getElementById('startTime').value,
+        endTime: document.getElementById('endTime').value,
+        location: document.getElementById('location').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        studentsNeeded: document.getElementById('studentsNeeded').value
+      };
+
+      if (!formData.activityName || !formData.date || !formData.startTime || !formData.endTime || !formData.location) {
+        showMessage('activityMessage', 'Complete all required fields.', false);
+        return;
+      }
+
+      const button = document.getElementById('createButton');
+      button.disabled = true;
+      button.textContent = 'Saving…';
+
+      google.script.run
+        .withSuccessHandler(result => {
+          showMessage('activityMessage', result.message, true);
+          ['activityName','activityDate','startTime','endTime','location','description'].forEach(id => {
+            document.getElementById(id).value = '';
+          });
+          document.getElementById('studentsNeeded').value = '1';
+          button.disabled = false;
+          button.textContent = 'Create Activity';
+          loadActivities();
+          loadDashboard();
+        })
+        .withFailureHandler(error => {
+          showMessage('activityMessage', error.message, false);
+          button.disabled = false;
+          button.textContent = 'Create Activity';
+        })
+        .createActivity(formData);
+    }
+    function excuseMissingAttendanceUI(alertId) {
+
+  if (!alertId) {
+    alert('Attendance Alert ID is missing.');
+    return;
+  }
+
+  const reason =
+    prompt(
+      'Reason for excusing this absence:'
+    );
+
+  if (!reason) {
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      alert(
+        result && result.message
+          ? result.message
+          : 'Attendance absence was excused.'
+      );
+
+      loadPendingScheduleChanges();
+
+    })
+    .withFailureHandler(function(error) {
+
+      alert(
+        '⚠️ ' +
+        String(
+          error &&
+          error.message
+            ? error.message
+            : error
+        )
+      );
+
+    })
+    .excuseAttendanceAlert(
+      alertId,
+      reason
+    );
+}
+
+function markMissingAttendanceNotExcusedUI(
+  alertId
+) {
+
+  if (!alertId) {
+    alert('Attendance Alert ID is missing.');
+    return;
+  }
+
+  if (
+    !confirm(
+      'Mark this absence as NOT EXCUSED?'
+    )
+  ) {
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      alert(
+        result && result.message
+          ? result.message
+          : 'Attendance absence was marked as not excused.'
+      );
+
+      loadPendingScheduleChanges();
+
+    })
+    .withFailureHandler(function(error) {
+
+      alert(
+        '⚠️ ' +
+        String(
+          error &&
+          error.message
+            ? error.message
+            : error
+        )
+      );
+
+    })
+    .markMissingAttendanceNotExcused(
+      alertId
+    );
+}
+
+function addWeeklyScheduleShift(day) {
+
+  const container =
+    document.getElementById(
+      'weeklyShifts' + day
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const row =
+    document.createElement('div');
+
+  row.className =
+    'weekly-shift-row';
+
+  row.style.display =
+    'flex';
+
+  row.style.gap =
+    '10px';
+
+  row.style.alignItems =
+    'end';
+
+  row.style.flexWrap =
+    'wrap';
+
+  row.style.marginBottom =
+    '10px';
+
+  row.innerHTML =
+    '<div>' +
+      '<label>Start</label>' +
+      '<input type="time" class="weekly-start">' +
+    '</div>' +
+
+    '<div>' +
+      '<label>End</label>' +
+      '<input type="time" class="weekly-end">' +
+    '</div>' +
+
+    '<div>' +
+      '<button type="button" onclick="this.closest(\'.weekly-shift-row\').remove()">' +
+        'Remove' +
+      '</button>' +
+    '</div>';
+
+  container.appendChild(row);
+}
+
+    function saveSchedule() {
+    const formData = { 
+  studentId: document.getElementById('scheduleStudent').value, 
+  dayOfWeek: document.getElementById('scheduleDay').value,
+  startDate: document.getElementById('scheduleStartDate').value,
+  endDate: document.getElementById('scheduleEndDate').value,
+  startTime: document.getElementById('scheduleStart').value, 
+  endTime: document.getElementById('scheduleEnd').value, 
+  location: document.getElementById('scheduleLocation').value.trim() 
+};
+
+      const button = document.getElementById('saveScheduleButton');
+      button.disabled = true;
+      button.textContent = 'Saving…';
+
+      google.script.run
+        .withSuccessHandler(result => {
+          showMessage('scheduleMessage', result.message, true);
+          button.disabled = false;
+          button.textContent = 'Save Work Schedule';
+        })
+        .withFailureHandler(error => {
+          showMessage('scheduleMessage', error.message, false);
+          button.disabled = false;
+          button.textContent = 'Save Work Schedule';
+        })
+        .saveRegularSchedule(formData);
+    }
+
+    function saveWeeklySchedule() {
+
+  const studentId =
+    document.getElementById(
+      'scheduleStudent'
+    ).value;
+
+  const startDate =
+    document.getElementById(
+      'scheduleStartDate'
+    ).value;
+
+  const endDate =
+    document.getElementById(
+      'scheduleEndDate'
+    ).value;
+
+  const location =
+    document.getElementById(
+      'scheduleLocation'
+    ).value.trim();
+
+  const dayCards =
+    document.querySelectorAll(
+      '.weekly-day-card'
+    );
+
+  const shifts = [];
+
+  dayCards.forEach(function(card) {
+
+    const day =
+      card.getAttribute(
+        'data-day'
+      );
+
+    const rows =
+      card.querySelectorAll(
+        '.weekly-shift-row'
+      );
+
+    rows.forEach(function(row) {
+
+      const startInput =
+        row.querySelector(
+          '.weekly-start'
+        );
+
+      const endInput =
+        row.querySelector(
+          '.weekly-end'
+        );
+
+      const startTime =
+        startInput
+          ? startInput.value
+          : '';
+
+      const endTime =
+        endInput
+          ? endInput.value
+          : '';
+
+      if (
+        !startTime &&
+        !endTime
+      ) {
+        return;
+      }
+
+      shifts.push({
+        dayOfWeek: day,
+        startTime: startTime,
+        endTime: endTime
+      });
+
+    });
+
+  });
+
+  const formData = {
+    studentId: studentId,
+    startDate: startDate,
+    endDate: endDate,
+    location: location,
+    shifts: shifts
+  };
+
+ const button =
+  document.getElementById(
+    'saveScheduleButton'
+  );
+
+button.disabled = true;
+button.textContent = 'Saving…';
+
+google.script.run
+  .withSuccessHandler(function(result) {
+
+    showMessage(
+      'scheduleMessage',
+      result.message,
+      true
+    );
+
+    button.disabled = false;
+    button.textContent =
+      'Save Weekly Schedule';
+
+  })
+  .withFailureHandler(function(error) {
+
+    showMessage(
+      'scheduleMessage',
+      error && error.message
+        ? error.message
+        : 'Unable to save weekly schedule.',
+      false
+    );
+
+    button.disabled = false;
+    button.textContent =
+      'Save Weekly Schedule';
+
+  })
+  .saveWeeklyRegularSchedule(
+    formData
+  );
+}
+function handleScheduleTreatmentChange() {
+  const treatment =
+    document.getElementById(
+      'scheduleTreatment'
+    ).value;
+
+  const box =
+    document.getElementById(
+      'replacementShiftBox'
+    );
+
+  if (
+    treatment ===
+    'REPLACES REGULAR SHIFT'
+  ) {
+    box.style.display = 'block';
+    refreshReplacementShift();
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+
+function refreshReplacementShift() {
+
+  const treatment =
+    document.getElementById(
+      'scheduleTreatment'
+    ).value;
+
+  if (
+    treatment !==
+    'REPLACES REGULAR SHIFT'
+  ) {
+    return;
+  }
+
+  const studentId =
+    document.getElementById(
+      'assignmentStudent'
+    ).value;
+
+  const activityId =
+    document.getElementById(
+      'assignmentActivity'
+    ).value;
+
+  const details =
+    document.getElementById(
+      'replacementShiftDetails'
+    );
+
+  if (!studentId || !activityId) {
+    details.textContent =
+      'Select a student and activity.';
+    return;
+  }
+
+  details.textContent =
+    'Looking up regular schedules...';
+
+  google.script.run
+    .withSuccessHandler(result => {
+
+      if (
+        !result ||
+        !result.found ||
+        !result.shifts ||
+        !result.shifts.length
+      ) {
+        details.innerHTML =
+          '<strong>No regular shifts found.</strong><br>' +
+          (
+            result && result.message
+              ? result.message
+              : ''
+          );
+
+        return;
+      }
+
+      let html =
+        '<div><strong>Activity:</strong> ' +
+        result.activityName +
+        '</div>' +
+
+        '<div><strong>Date:</strong> ' +
+        result.activityDate +
+        '</div>' +
+
+        '<div><strong>Activity time:</strong> ' +
+        result.activityStart +
+        ' – ' +
+        result.activityEnd +
+        '</div>' +
+
+        '<div style="margin-top:8px;">' +
+        '<strong>Activity hours:</strong> ' +
+        Number(
+          result.activityHours || 0
+        ).toFixed(2) +
+        '</div>' +
+
+        '<div style="margin-top:16px;">' +
+        '<strong>Select regular hours to replace:</strong>' +
+        '</div>';
+
+      result.shifts.forEach(function(shift) {
+
+        html +=
+          '<div style="' +
+            'margin-top:10px;' +
+            'padding:10px;' +
+            'border:1px solid #dce4ed;' +
+            'border-radius:8px;' +
+            'background:white;' +
+          '">' +
+
+            '<div><strong>' +
+              shift.displayDate +
+            '</strong></div>' +
+
+            '<div>' +
+              shift.regularStart +
+              ' – ' +
+              shift.regularEnd +
+            '</div>' +
+
+            '<div style="margin-top:6px;">' +
+              'Available: ' +
+              Number(
+                shift.availableHours || 0
+              ).toFixed(2) +
+              ' hrs' +
+            '</div>' +
+
+            '<div style="margin-top:8px;">' +
+              '<label style="margin-bottom:4px;">' +
+                'Replace hours' +
+              '</label>' +
+
+              '<input ' +
+                'type="number" ' +
+                'min="0" ' +
+                'max="' +
+                shift.availableHours +
+                '" ' +
+                'step="0.25" ' +
+                'value="0" ' +
+                'class="replacementHoursInput" ' +
+                'data-shift-key="' +
+                shift.shiftKey +
+                '" ' +
+                'data-date="' +
+                shift.dateValue +
+                '" ' +
+                'data-start="' +
+                shift.regularStartValue +
+                '" ' +
+                'data-end="' +
+                shift.regularEndValue +
+                '" ' +
+                'data-available="' +
+                shift.availableHours +
+                '" ' +
+                'oninput="updateReplacementAllocation()" ' +
+              '>' +
+            '</div>' +
+
+          '</div>';
+      });
+
+      html +=
+        '<div style="' +
+          'margin-top:16px;' +
+          'padding:12px;' +
+          'border-radius:8px;' +
+          'background:#eef4f8;' +
+        '">' +
+
+          '<div><strong>Allocated:</strong> ' +
+            '<span id="replacementAllocated">0.00</span>' +
+            ' / ' +
+            Number(
+              result.activityHours || 0
+            ).toFixed(2) +
+            ' hrs' +
+          '</div>' +
+
+          '<div style="margin-top:4px;">' +
+            '<strong>Remaining:</strong> ' +
+            '<span id="replacementRemaining">' +
+              Number(
+                result.activityHours || 0
+              ).toFixed(2) +
+            '</span> hrs' +
+          '</div>' +
+
+        '</div>';
+
+      details.innerHTML = html;
+
+      details.dataset.activityHours =
+        Number(
+          result.activityHours || 0
+        ).toFixed(2);
+
+    })
+    .withFailureHandler(error => {
+
+      details.textContent =
+        error && error.message
+          ? error.message
+          : 'Unable to load regular schedules.';
+
+    })
+    .getRegularShiftForActivity(
+      studentId,
+      activityId
+    );
+}
+function updateReplacementAllocation() {
+
+  const details =
+    document.getElementById(
+      'replacementShiftDetails'
+    );
+
+  const activityHours =
+    Number(
+      details.dataset.activityHours || 0
+    );
+
+  const inputs =
+    document.querySelectorAll(
+      '.replacementHoursInput'
+    );
+
+  let allocated = 0;
+
+  inputs.forEach(function(input) {
+
+    const available =
+      Number(
+        input.dataset.available || 0
+      );
+
+    let value =
+      Number(
+        input.value || 0
+      );
+
+    if (value < 0) {
+      value = 0;
+    }
+
+    if (value > available) {
+      value = available;
+      input.value =
+        available.toFixed(2);
+    }
+
+    allocated += value;
+  });
+
+  if (allocated > activityHours) {
+
+    alert(
+      'You cannot replace more hours than the activity contains.'
+    );
+
+    return;
+  }
+
+  const remaining =
+    Math.max(
+      0,
+      activityHours - allocated
+    );
+
+  document.getElementById(
+    'replacementAllocated'
+  ).textContent =
+    allocated.toFixed(2);
+
+  document.getElementById(
+    'replacementRemaining'
+  ).textContent =
+    remaining.toFixed(2);
+}
+function saveAssignment() {
+
+  const studentId =
+    document.getElementById(
+      'assignmentStudent'
+    ).value;
+
+  const activityId =
+    document.getElementById(
+      'assignmentActivity'
+    ).value;
+
+  const scheduleTreatment =
+    document.getElementById(
+      'scheduleTreatment'
+    ).value;
+
+  if (
+    !studentId ||
+    !activityId ||
+    !scheduleTreatment
+  ) {
+    showMessage(
+      'assignmentMessage',
+      'Select a student, activity, and how the activity should count.',
+      false
+    );
+
+    return;
+  }
+
+  const replacementAllocations = [];
+
+  // --------------------------------
+  // COLLECT PARTIAL SHIFT REPLACEMENTS
+  // --------------------------------
+
+  if (
+    scheduleTreatment ===
+    'REPLACES REGULAR SHIFT'
+  ) {
+
+    const details =
+      document.getElementById(
+        'replacementShiftDetails'
+      );
+
+    const activityHours =
+      Number(
+        details.dataset.activityHours || 0
+      );
+
+    const inputs =
+      document.querySelectorAll(
+        '.replacementHoursInput'
+      );
+
+    let allocatedHours = 0;
+
+    inputs.forEach(function(input) {
+
+      const hours =
+        Number(input.value || 0);
+
+      if (hours <= 0) {
+        return;
+      }
+
+      replacementAllocations.push({
+        shiftKey:
+          String(
+            input.dataset.shiftKey || ''
+          ),
+
+        date:
+          String(
+            input.dataset.date || ''
+          ),
+
+        regularStart:
+          String(
+            input.dataset.start || ''
+          ),
+
+        regularEnd:
+          String(
+            input.dataset.end || ''
+          ),
+
+        availableHours:
+          Number(
+            input.dataset.available || 0
+          ),
+
+        replaceHours:
+          hours
+      });
+
+      allocatedHours += hours;
+    });
+
+    allocatedHours =
+      Math.round(
+        allocatedHours * 100
+      ) / 100;
+
+    if (!replacementAllocations.length) {
+      showMessage(
+        'assignmentMessage',
+        'Enter the regular hours that this activity will replace.',
+        false
+      );
+
+      return;
+    }
+
+    if (
+      Math.abs(
+        allocatedHours -
+        activityHours
+      ) > 0.001
+    ) {
+      showMessage(
+        'assignmentMessage',
+        'Replacement hours must equal the activity hours. ' +
+        'Activity: ' +
+        activityHours.toFixed(2) +
+        ' hours. Allocated: ' +
+        allocatedHours.toFixed(2) +
+        ' hours.',
+        false
+      );
+
+      return;
+    }
+  }
+
+
+  const formData = {
+    studentId:
+      studentId,
+
+    activityId:
+      activityId,
+
+    scheduleTreatment:
+      scheduleTreatment,
+
+    replacementAllocations:
+      replacementAllocations
+  };
+
+
+  const button =
+    document.getElementById(
+      'saveAssignmentButton'
+    );
+
+  button.disabled = true;
+  button.textContent = 'Assigning…';
+
+
+  google.script.run
+    .withSuccessHandler(result => {
+
+      showMessage(
+        'assignmentMessage',
+        result.message,
+        true
+      );
+
+      button.disabled = false;
+      button.textContent =
+        'Assign Student';
+
+      loadDashboard();
+    })
+    .withFailureHandler(error => {
+
+      showMessage(
+        'assignmentMessage',
+        error.message,
+        false
+      );
+
+      button.disabled = false;
+      button.textContent =
+        'Assign Student';
+    })
+    .saveActivityAssignment(
+      formData
+    );
+}
+
+    function loadReport() {
+      const month = document.getElementById('month').value;
+      google.script.run
+        .withSuccessHandler(rows => {
+          const tbody = document.getElementById('results');
+          tbody.innerHTML = '';
+          rows.forEach(row => {
+            const payment = row.totalHours * HOURLY_RATE;
+            const tr = document.createElement('tr');
+            [row.studentName, row.shifts, row.totalHours.toFixed(2), '$10.50',
+              payment.toLocaleString('en-US', {style:'currency', currency:'USD'})]
+              .forEach(value => {
+                const td = document.createElement('td');
+                td.textContent = value;
+                tr.appendChild(td);
+              });
+            tbody.appendChild(tr);
+          });
+          showMessage('reportMessage',
+            rows.length ? rows.length + ' student total(s) found.' : 'No completed shifts found.',
+            true);
+        })
+        .withFailureHandler(error => showMessage('reportMessage', error.message, false))
+        .getMonthlyTotals(month);
+    }
+
+
+    function toggleStudentForm(show) {
+      document.getElementById('studentFormCard').style.display =
+        show ? 'block' : 'none';
+    }
+
+    function saveStudentProfileFromPage() {
+      const formData = {
+        studentId: document.getElementById('profileStudentId').value.trim(),
+        fullName: document.getElementById('profileFullName').value.trim(),
+        studentNumber: document.getElementById('profileStudentNumber').value.trim(),
+        last4: document.getElementById('profileLast4').value.trim(),
+        email: document.getElementById('profileEmail').value.trim(),
+        phone: document.getElementById('profilePhone').value.trim(),
+        address: document.getElementById('profileAddress').value.trim(),
+        notes: document.getElementById('profileNotes').value.trim()
+      };
+
+      const button = document.getElementById('saveProfileButton');
+      button.disabled = true;
+      button.textContent = 'Saving…';
+
+      google.script.run
+        .withSuccessHandler(result => {
+          showMessage('profileMessage', result.message, true);
+          button.disabled = false;
+          button.textContent = 'Save Profile';
+          clearStudentProfileForm();
+          loadStudentProfiles();
+          loadStudentsInto('scheduleStudent');
+          loadStudentsInto('assignmentStudent');
+          setTimeout(() => toggleStudentForm(false), 1200);
+        })
+        .withFailureHandler(error => {
+          showMessage('profileMessage', error.message, false);
+          button.disabled = false;
+          button.textContent = 'Save Profile';
+        })
+        .saveStudentProfile(formData);
+    }
+
+    function clearStudentProfileForm() {
+      [
+        'profileStudentId',
+        'profileFullName',
+        'profileStudentNumber',
+        'profileLast4',
+        'profileEmail',
+        'profilePhone',
+        'profileAddress',
+        'profileNotes'
+      ].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    }
+
+    function loadStudentProfiles() {
+      google.script.run
+        .withSuccessHandler(profiles => {
+          const body = document.getElementById('studentProfilesTable');
+          body.innerHTML = '';
+
+          if (!profiles.length) {
+            body.innerHTML =
+              '<tr><td colspan="7" class="empty">No student profiles have been added yet.</td></tr>';
+            return;
+          }
+
+          profiles.forEach(profile => {
+            const tr = document.createElement('tr');
+
+            [
+              profile.fullName,
+              profile.studentNumber,
+              profile.last4Masked,
+              profile.email,
+              profile.phone,
+              Number(profile.totalHours || 0).toFixed(2)
+            ].forEach(value => {
+              const td = document.createElement('td');
+              td.textContent = value;
+              tr.appendChild(td);
+            });
+
+           const actionCell = document.createElement('td');
+
+actionCell.style.display = 'flex';
+actionCell.style.gap = '8px';
+actionCell.style.flexWrap = 'wrap';
+
+
+// VIEW BUTTON
+const viewButton =
+  document.createElement('button');
+
+viewButton.className =
+  'primary blue';
+
+viewButton.textContent =
+  'View';
+
+viewButton.onclick = () =>
+  loadStudentProfileDetail(
+    profile.studentId
+  );
+
+actionCell.appendChild(
+  viewButton
+);
+
+
+// EDIT BUTTON
+const editButton =
+  document.createElement('button');
+
+editButton.className =
+  'primary';
+
+editButton.textContent =
+  'Edit';
+
+editButton.onclick = () =>
+  openStudentEdit(
+    profile.studentId
+  );
+
+actionCell.appendChild(
+  editButton
+);
+
+// DEACTIVATE BUTTON
+const deactivateButton =
+  document.createElement('button');
+
+deactivateButton.textContent =
+  'Deactivate';
+
+deactivateButton.style.background =
+  '#c62828';
+
+deactivateButton.style.color =
+  'white';
+
+deactivateButton.style.border =
+  'none';
+
+deactivateButton.style.borderRadius =
+  '6px';
+
+deactivateButton.style.padding =
+  '8px 14px';
+
+deactivateButton.style.cursor =
+  'pointer';
+
+deactivateButton.onclick = () =>
+  confirmDeactivateStudent(
+    profile.studentId,
+    profile.fullName
+  );
+
+actionCell.appendChild(
+  deactivateButton
+);
+
+tr.appendChild(
+  actionCell
+);
+            body.appendChild(tr);
+          });
+        })
+        .withFailureHandler(error => {
+          document.getElementById('studentProfilesTable').innerHTML =
+            '<tr><td colspan="7" class="empty">' +
+            escapeHtml(error.message) +
+            '</td></tr>';
+        })
+        .getStudentProfiles();
+    }
+
+function loadInactiveStudents() {
+
+  const body =
+    document.getElementById(
+      'inactiveStudentsTable'
+    );
+
+  if (!body) {
+    return;
+  }
+
+  body.innerHTML =
+    '<tr>' +
+      '<td colspan="5" class="empty">' +
+        'Loading inactive students...' +
+      '</td>' +
+    '</tr>';
+
+  google.script.run
+    .withSuccessHandler(function(students) {
+
+      body.innerHTML = '';
+
+      if (!students.length) {
+
+        body.innerHTML =
+          '<tr>' +
+            '<td colspan="5" class="empty">' +
+              'No inactive students.' +
+            '</td>' +
+          '</tr>';
+
+        return;
+      }
+
+
+      students.forEach(function(student) {
+
+        const tr =
+          document.createElement('tr');
+
+
+        // NAME
+        const nameCell =
+          document.createElement('td');
+
+        nameCell.textContent =
+          student.fullName;
+
+        tr.appendChild(nameCell);
+
+
+        // STUDENT NUMBER
+        const numberCell =
+          document.createElement('td');
+
+        numberCell.textContent =
+          student.studentNumber;
+
+        tr.appendChild(numberCell);
+
+
+        // EMAIL
+        const emailCell =
+          document.createElement('td');
+
+        emailCell.textContent =
+          student.email;
+
+        tr.appendChild(emailCell);
+
+
+        // PHONE
+        const phoneCell =
+          document.createElement('td');
+
+        phoneCell.textContent =
+          student.phone;
+
+        tr.appendChild(phoneCell);
+
+
+        // ACTION
+        const actionCell =
+          document.createElement('td');
+
+        const button =
+          document.createElement('button');
+
+        button.className =
+          'primary';
+
+        button.textContent =
+          'Reactivate';
+
+        button.onclick =
+          function() {
+            confirmReactivateStudent(
+              student.studentId,
+              student.fullName
+            );
+          };
+
+        actionCell.appendChild(
+          button
+        );
+
+        tr.appendChild(
+          actionCell
+        );
+
+        body.appendChild(
+          tr
+        );
+      });
+
+    })
+    .withFailureHandler(function(error) {
+
+      body.innerHTML =
+        '<tr>' +
+          '<td colspan="5" class="empty">' +
+            escapeHtml(
+              error.message
+            ) +
+          '</td>' +
+        '</tr>';
+
+    })
+    .getInactiveStudentProfiles();
+}
+
+function confirmDeactivateStudent(
+  studentId,
+  studentName
+) {
+
+  const confirmed =
+    confirm(
+      'Deactivate ' +
+      studentName +
+      '?\n\n' +
+      'They will disappear from active student lists and will no longer be able to clock in, but their previous attendance and payroll history will be preserved.'
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      alert(
+        result && result.message
+          ? result.message
+          : 'Student deactivated.'
+      );
+
+      loadStudentProfiles();
+
+      loadStudentsInto(
+        'scheduleStudent'
+      );
+
+      loadStudentsInto(
+        'assignmentStudent'
+      );
+
+      loadDashboard();
+
+    })
+    .withFailureHandler(function(error) {
+
+      alert(
+        error && error.message
+          ? error.message
+          : 'Unable to deactivate student.'
+      );
+
+    })
+    .deactivateStudentProfile(
+      studentId
+    );
+}
+
+function confirmReactivateStudent(
+  studentId,
+  studentName
+) {
+
+  const confirmed =
+    confirm(
+      'Reactivate ' +
+      studentName +
+      '?\n\n' +
+      'They will return to active student lists.'
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const newPin =
+    prompt(
+      'Enter a new PIN for ' +
+      studentName +
+      '.\n\n' +
+      'Use 4–8 numbers.\n' +
+      'If their authentication record already exists, this PIN will replace the old one.'
+    );
+
+  if (newPin === null) {
+    return;
+  }
+
+  const cleanPin =
+    String(newPin).trim();
+
+  if (!/^\d{4,8}$/.test(cleanPin)) {
+    alert(
+      'PIN must contain 4 to 8 numbers.'
+    );
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      alert(
+        result && result.message
+          ? result.message
+          : 'Student reactivated.'
+      );
+
+      loadStudentProfiles();
+      loadInactiveStudents();
+
+      loadStudentsInto(
+        'scheduleStudent'
+      );
+
+      loadStudentsInto(
+        'assignmentStudent'
+      );
+
+      loadDashboard();
+
+    })
+    .withFailureHandler(function(error) {
+
+      alert(
+        error && error.message
+          ? error.message
+          : 'Unable to reactivate student.'
+      );
+
+    })
+    .reactivateStudentProfile(
+      studentId,
+      cleanPin
+    );
+}
+
+function saveStudentEdit() {
+
+  const formData = {
+    studentId:
+      document.getElementById('editStudentId').value.trim(),
+
+    fullName:
+      document.getElementById('editStudentName').value.trim(),
+
+    studentNumber:
+      document.getElementById('editStudentNumber').value.trim(),
+
+    last4:
+      document.getElementById('editStudentLast4').value.trim(),
+
+    email:
+      document.getElementById('editStudentEmail').value.trim(),
+
+    phone:
+      document.getElementById('editStudentPhone').value.trim(),
+
+    address:
+      document.getElementById('editStudentAddress').value.trim(),
+
+    notes:
+      document.getElementById('editStudentNotes').value.trim(),
+
+    newPin:
+      document.getElementById('editStudentPin').value.trim()
+  };
+
+  const button =
+    document.getElementById('saveStudentEditButton');
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Saving...';
+  }
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+
+      showMessage(
+        'editStudentMessage',
+        result.message,
+        true
+      );
+
+      document.getElementById(
+        'editStudentPin'
+      ).value = '';
+
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Save Changes';
+      }
+
+      loadStudentProfiles();
+
+      setTimeout(function() {
+        closeStudentEdit();
+      }, 1200);
+
+    })
+    .withFailureHandler(function(error) {
+
+      showMessage(
+        'editStudentMessage',
+        error && error.message
+          ? error.message
+          : 'Unable to update student.',
+        false
+      );
+
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Save Changes';
+      }
+
+    })
+    .saveStudentEditProfile(formData);
+}
+
+function openStudentEdit(studentId) {
+
+  if (!studentId) {
+    alert('Student ID is missing.');
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(function(profile) {
+
+      const card =
+        document.getElementById(
+          'editStudentCard'
+        );
+
+      if (!card) {
+        alert(
+          'Edit Student form was not found on the Team page.'
+        );
+        return;
+      }
+
+      card.style.display =
+        'block';
+
+      document.getElementById(
+        'studentDetailCard'
+      ).style.display =
+        'none';
+
+      document.getElementById(
+        'editStudentId'
+      ).value =
+        profile.studentId || '';
+
+      document.getElementById(
+        'editStudentName'
+      ).value =
+        profile.fullName || '';
+
+      document.getElementById(
+        'editStudentNumber'
+      ).value =
+        profile.studentNumber || '';
+
+      document.getElementById(
+        'editStudentLast4'
+      ).value =
+        profile.last4 || '';
+
+      document.getElementById(
+        'editStudentEmail'
+      ).value =
+        profile.email || '';
+
+      document.getElementById(
+        'editStudentPhone'
+      ).value =
+        profile.phone || '';
+
+      document.getElementById(
+        'editStudentAddress'
+      ).value =
+        profile.address || '';
+
+      document.getElementById(
+        'editStudentNotes'
+      ).value =
+        profile.notes || '';
+
+      document.getElementById(
+        'editStudentMessage'
+      ).textContent = '';
+
+      card.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+
+    })
+    .withFailureHandler(function(error) {
+
+      alert(
+        error && error.message
+          ? error.message
+          : 'Unable to load student profile.'
+      );
+
+    })
+    .getStudentProfileDetail(
+      studentId
+    );
+}
+
+
+function closeStudentEdit() {
+
+  const card =
+    document.getElementById(
+      'editStudentCard'
+    );
+
+  if (card) {
+    card.style.display =
+      'none';
+  }
+}
+
+    setToday();
+    loadStudentsInto('scheduleStudent');
+    loadStudentsInto('assignmentStudent');
+    loadActivities();
+    loadDashboard();
+    loadStudentProfiles();
+    loadInactiveStudents();
+    loadPendingScheduleChanges();
+  </script>
+</body>
+</html>

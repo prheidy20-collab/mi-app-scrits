@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    .container {
+      width: min(760px, 94%);
+      margin: 30px auto;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #dce4ed;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(20,59,93,.08);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #143b5d;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #dce4ed;
+      border-radius: 10px;
+      padding: 11px;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      min-height: 48px;
+      padding: 12px 20px;
+      background: #18864b;
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .message {
+      display: none;
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .success {
+      display: block;
+      background: #e8f7ee;
+      border: 1px solid #9ed6b5;
+      color: #12643a;
+    }
+
+    .error {
+      display: block;
+      background: #fdecec;
+      border: 1px solid #e3aaaa;
+      color: #8f2525;
+    }
+
+    .note {
+      color: #667085;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 650px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .full {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>Add New Student</h2>
+
+      <p class="note">
+        This creates the student profile and secure clock account at the same time.
+      </p>
+
+      <div class="grid">
+
+        <div class="full">
+          <label>Full name *</label>
+          <input id="fullName">
+        </div>
+
+        <div>
+          <label>Student number *</label>
+          <input id="studentNumber">
+        </div>
+
+        <div>
+          <label>Last 4 SSN *</label>
+          <input
+            id="last4"
+            type="password"
+            maxlength="4"
+            inputmode="numeric"
+          >
+        </div>
+
+        <div>
+          <label>Phone</label>
+          <input id="phone" type="tel">
+        </div>
+
+        <div>
+          <label>Email *</label>
+          <input id="email" type="email">
+        </div>
+
+        <div class="full">
+          <label>Home address</label>
+          <textarea id="address"></textarea>
+        </div>
+
+        <div>
+          <label>Clock PIN *</label>
+          <input
+            id="pin"
+            type="password"
+            maxlength="8"
+            inputmode="numeric"
+          >
+        </div>
+
+        <div class="full">
+          <button
+            id="saveButton"
+            onclick="saveStudent()"
+          >
+            Create Student
+          </button>
+        </div>
+
+      </div>
+
+      <div id="message" class="message"></div>
+    </div>
+  </div>
+
+  <script>
+    function saveStudent() {
+      const formData = {
+        fullName:
+          document.getElementById('fullName').value.trim(),
+
+        studentNumber:
+          document.getElementById('studentNumber').value.trim(),
+
+        last4:
+          document.getElementById('last4').value.trim(),
+
+        phone:
+          document.getElementById('phone').value.trim(),
+
+        email:
+          document.getElementById('email').value.trim(),
+
+        address:
+          document.getElementById('address').value.trim(),
+
+        pin:
+          document.getElementById('pin').value.trim()
+      };
+
+      const button =
+        document.getElementById('saveButton');
+
+      button.disabled = true;
+      button.textContent = 'Creating…';
+
+      google.script.run
+        .withSuccessHandler(result => {
+          showMessage(result.message, true);
+          clearForm();
+
+          button.disabled = false;
+          button.textContent = 'Create Student';
+        })
+        .withFailureHandler(error => {
+          showMessage(error.message, false);
+
+          button.disabled = false;
+          button.textContent = 'Create Student';
+        })
+        .createStudentFromWizard(formData);
+    }
+
+
+    function clearForm() {
+      [
+        'fullName',
+        'studentNumber',
+        'last4',
+        'phone',
+        'email',
+        'address',
+        'pin'
+      ].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    }
+
+
+    function showMessage(text, success) {
+      const element =
+        document.getElementById('message');
+
+      element.textContent = text;
+
+      element.className =
+        'message ' +
+        (success ? 'success' : 'error');
+    }
+  </script>
+</body>
+</html>

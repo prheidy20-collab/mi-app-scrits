@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root {
+      --navy: #143b5d;
+      --blue: #2477b3;
+      --green: #18864b;
+      --red: #b83232;
+      --amber: #b7791f;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --border: #dce4ed;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      width: min(1180px, 94%);
+      margin: 28px auto;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      color: white;
+      padding: 24px;
+      border-radius: 18px;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      margin: 0 0 6px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 9px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      min-height: 44px;
+      padding: 10px 16px;
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .blue { background: var(--blue); }
+    .green { background: var(--green); }
+    .red { background: var(--red); }
+
+    button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+    }
+
+    th, td {
+      padding: 11px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #edf3f8;
+      color: var(--navy);
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .PENDING {
+      background: #fff6dd;
+      color: #805d12;
+    }
+
+    .APPROVED {
+      background: #e7f7ee;
+      color: #12643a;
+    }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 9px;
+      font-weight: 700;
+    }
+
+    .success {
+      display: block;
+      background: #e8f7ee;
+      border: 1px solid #9ed6b5;
+      color: #12643a;
+    }
+
+    .error {
+      display: block;
+      background: #fdecec;
+      border: 1px solid #e3aaaa;
+      color: #8f2525;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .summary-box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #f8fafc;
+    }
+
+    .summary-label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .summary-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-top: 5px;
+    }
+
+    @media (max-width: 760px) {
+      .summary {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="header">
+      <h1>Payroll Center</h1>
+      <p>Review, adjust, and approve student stipend hours.</p>
+    </div>
+
+    <div class="card">
+
+      <div class="controls">
+        <div>
+          <label for="month">Payroll Month</label>
+          <input id="month" type="month">
+        </div>
+
+        <button
+          class="blue"
+          onclick="loadPayroll()"
+        >
+          Load Payroll
+        </button>
+      </div>
+
+      <div id="payrollMessage" class="message"></div>
+
+      <div class="summary">
+        <div class="summary-box">
+          <div class="summary-label">Students</div>
+          <div class="summary-value" id="studentCount">0</div>
+        </div>
+
+        <div class="summary-box">
+          <div class="summary-label">Approved Hours</div>
+          <div class="summary-value" id="approvedHoursTotal">0.00</div>
+        </div>
+
+        <div class="summary-box">
+          <div class="summary-label">Approved Payroll</div>
+          <div class="summary-value" id="approvedAmountTotal">$0.00</div>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Student #</th>
+              <th>Last 4</th>
+              <th>Recorded</th>
+              <th>Adjustments</th>
+              <th>Approved Hours</th>
+              <th>Rate</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody id="payrollTable">
+            <tr>
+              <td colspan="10">Choose a month and load payroll.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <h2>Add Manual Adjustment</h2>
+
+      <div class="controls">
+        <div style="min-width:220px">
+          <label for="adjustStudent">Student</label>
+          <select id="adjustStudent">
+            <option value="">Select student</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="adjustDate">Work Date</label>
+          <input id="adjustDate" type="date">
+        </div>
+
+        <div>
+          <label for="adjustType">Type</label>
+          <select id="adjustType">
+            <option value="">Select type</option>
+            <option value="MISSING CLOCK-IN">Missing clock-in</option>
+            <option value="INTERNET OUTAGE">Internet outage</option>
+            <option value="OFF-CAMPUS ACTIVITY">Off-campus activity</option>
+            <option value="CORRECTION">Correction</option>
+            <option value="OTHER">Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="adjustHours">Hours</label>
+          <input
+            id="adjustHours"
+            type="number"
+            step="0.25"
+          >
+        </div>
+      </div>
+
+      <label for="adjustReason">Reason</label>
+      <textarea id="adjustReason"></textarea>
+
+      <button
+        class="green"
+        onclick="saveAdjustment()"
+      >
+        Add Adjustment
+      </button>
+
+      <div id="adjustMessage" class="message"></div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentPayroll = [];
+
+    function initialize() {
+      const now = new Date();
+
+      document.getElementById('month').value =
+        now.getFullYear() +
+        '-' +
+        String(now.getMonth() + 1).padStart(2, '0');
+
+      loadStudentDropdown();
+    }
+
+    function loadStudentDropdown() {
+      google.script.run
+        .withSuccessHandler(students => {
+          const select =
+            document.getElementById('adjustStudent');
+
+          select.innerHTML =
+            '<option value="">Select student</option>';
+
+          students.forEach(student => {
+            const option =
+              document.createElement('option');
+
+            option.value = student.studentId;
+            option.textContent = student.studentName;
+
+            select.appendChild(option);
+          });
+        })
+        .getStudentsForSchedule();
+    }
+
+    function loadPayroll() {
+      const month =
+        document.getElementById('month').value;
+
+      if (!month) {
+        showMessage(
+          'payrollMessage',
+          'Select a payroll month.',
+          false
+        );
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(rows => {
+
+  currentPayroll = rows || [];
+
+  if (!rows || rows.length === 0) {
+    showMessage(
+      'payrollMessage',
+      'No payroll data found for this month.',
+      false
+    );
+
+    renderPayroll([]);
+    return;
+  }
+
+  showMessage(
+    'payrollMessage',
+    '',
+    true
+  );
+
+  renderPayroll(rows);
+})
+        .withFailureHandler(error => {
+          showMessage(
+            'payrollMessage',
+            error.message,
+            false
+          );
+        })
+        .getPayrollReview(month);
+    }
+
+    function renderPayroll(rows) {
+      const body =
+        document.getElementById('payrollTable');
+
+      body.innerHTML = '';
+
+      let approvedHoursTotal = 0;
+      let approvedAmountTotal = 0;
+
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+
+        const approvedHours =
+          Number(row.approvedHours || 0);
+
+        const amount =
+          Number(row.amount || 0);
+
+        if (row.status === 'APPROVED') {
+          approvedHoursTotal += approvedHours;
+          approvedAmountTotal += amount;
+        }
+
+        tr.innerHTML = `
+          <td>${escapeHtml(row.studentName)}</td>
+          <td>${escapeHtml(row.studentNumber)}</td>
+          <td>${escapeHtml(row.last4Masked)}</td>
+          <td>${Number(row.recordedHours).toFixed(2)}</td>
+          <td>${Number(row.adjustmentHours).toFixed(2)}</td>
+
+          <td>
+            <input
+              id="hours-${row.studentId}"
+              type="number"
+              step="0.25"
+              value="${Number(row.approvedHours).toFixed(2)}"
+              style="width:90px"
+            >
+          </td>
+
+          <td>$10.50</td>
+
+          <td>
+            ${Number(row.amount).toLocaleString(
+              'en-US',
+              {
+                style: 'currency',
+                currency: 'USD'
+              }
+            )}
+          </td>
+
+          <td>
+            <span class="status ${row.status}">
+              ${escapeHtml(row.status)}
+            </span>
+          </td>
+
+          <td>
+            <button
+              class="green"
+              onclick="approvePayroll('${row.studentId}')"
+            >
+              Approve
+            </button>
+          </td>
+        `;
+
+        body.appendChild(tr);
+      });
+
+      document.getElementById('studentCount').textContent =
+        rows.length;
+
+      document.getElementById('approvedHoursTotal').textContent =
+        approvedHoursTotal.toFixed(2);
+
+      document.getElementById('approvedAmountTotal').textContent =
+        approvedAmountTotal.toLocaleString(
+          'en-US',
+          {
+            style: 'currency',
+            currency: 'USD'
+          }
+        );
+    }
+
+    function approvePayroll(studentId) {
+      const month =
+        document.getElementById('month').value;
+
+      const approvedHours =
+        document.getElementById(
+          'hours-' + studentId
+        ).value;
+
+      google.script.run
+        .withSuccessHandler(result => {
+          showMessage(
+            'payrollMessage',
+            result.message,
+            true
+          );
+
+          loadPayroll();
+        })
+        .withFailureHandler(error => {
+          showMessage(
+            'payrollMessage',
+            error.message,
+            false
+          );
+        })
+        .approveStudentPayroll(
+          month,
+          studentId,
+          approvedHours,
+          ''
+        );
+    }
+
+    function saveAdjustment() {
+      const formData = {
+        studentId:
+          document.getElementById('adjustStudent').value,
+
+        workDate:
+          document.getElementById('adjustDate').value,
+
+        adjustmentType:
+          document.getElementById('adjustType').value,
+
+        hours:
+          document.getElementById('adjustHours').value,
+
+        reason:
+          document.getElementById('adjustReason').value.trim()
+      };
+
+      google.script.run
+        .withSuccessHandler(result => {
+          showMessage(
+            'adjustMessage',
+            result.message,
+            true
+          );
+
+          document.getElementById('adjustDate').value = '';
+          document.getElementById('adjustType').value = '';
+          document.getElementById('adjustHours').value = '';
+          document.getElementById('adjustReason').value = '';
+
+          loadPayroll();
+        })
+        .withFailureHandler(error => {
+          showMessage(
+            'adjustMessage',
+            error.message,
+            false
+          );
+        })
+        .addPayrollAdjustment(formData);
+    }
+
+    function showMessage(id, text, success) {
+      const element =
+        document.getElementById(id);
+
+      element.textContent = text;
+
+      element.className =
+        'message ' +
+        (success ? 'success' : 'error');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    initialize();
+  </script>
+</body>
+</html>
